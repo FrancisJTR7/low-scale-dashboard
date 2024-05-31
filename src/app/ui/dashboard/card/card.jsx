@@ -2,7 +2,7 @@ import { MdSupervisedUserCircle } from 'react-icons/md';
 
 const Card = () => {
   return (
-    <div className='bg-[#182237] p-[20px] rounded-[10px] flex gap-[20px] cursor-pointer w-full hover:bg-[#2e374a]'>
+    <div className='bg-[#f3f1ee] text-black p-[20px] rounded-[10px] flex gap-[20px] cursor-pointer w-full hover:bg-[#2e374a]'>
       <MdSupervisedUserCircle size={24} />
       <div className='flex gap-[20px] flex-col'>
         <span>Total Users</span>

@@ -11,8 +11,8 @@ const MenuLink = ({ item }) => {
     <Link
       href={item.path}
       className={clsx(
-        'p-[20px] flex items-center gap-[10px] hover:bg-[#2e374a] my-[5px] rounded-[10px]',
-        { 'bg-[#2e374a]': pathname === item.path }
+        'p-[20px] flex items-center gap-[10px] text-black text-[13px] italic hover:bg-[#BAB5A9] my-[5px] rounded-[10px]',
+        { 'bg-[#AFB6C8]': pathname === item.path }
       )}
     >
       {item.icon}

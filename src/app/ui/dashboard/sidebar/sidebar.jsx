@@ -13,62 +13,74 @@ import {
 import MenuLink from './menuLink/menuLink';
 import Image from 'next/image';
 
+import { IoMdInformationCircleOutline } from 'react-icons/io';
+
 const menuItems = [
   {
-    title: 'Pages',
+    title: '',
     list: [
       {
-        title: 'Dashboard',
+        title: 'Snapshot',
         path: '/dashboard',
         icon: <MdDashboard />,
-      },
-      {
-        title: 'Users',
-        path: '/dashboard/users',
-        icon: <MdSupervisedUserCircle />,
-      },
-      {
-        title: 'Products',
-        path: '/dashboard/products',
-        icon: <MdShoppingBag />,
-      },
-      {
-        title: 'Transactions',
-        path: '/dashboard/transactions',
-        icon: <MdAttachMoney />,
       },
     ],
   },
   {
-    title: 'Analytics',
+    title: 'Business',
     list: [
       {
-        title: 'Revenue',
+        title: 'Daily Pacing',
+        path: '/dashboard/users',
+        icon: <MdSupervisedUserCircle />,
+      },
+      {
+        title: 'Weekly + Monthly',
+        path: '/dashboard/products',
+        icon: <MdShoppingBag />,
+      },
+    ],
+  },
+  {
+    title: 'Channels',
+    list: [
+      {
+        title: 'Channel Snapshot',
         path: '/dashboard/revenue',
         icon: <MdWork />,
       },
       {
-        title: 'Reports',
+        title: 'Daily Heatmaps',
         path: '/dashboard/reports',
         icon: <MdAnalytics />,
       },
       {
-        title: 'Teams',
+        title: 'Weekly + Monthly',
+        path: '/dashboard/teams',
+        icon: <MdPeople />,
+      },
+      {
+        title: 'Creative + Landing Pages',
+        path: '/dashboard/teams',
+        icon: <MdPeople />,
+      },
+      {
+        title: 'Google Deep Dive',
         path: '/dashboard/teams',
         icon: <MdPeople />,
       },
     ],
   },
   {
-    title: 'User',
+    title: 'Deep Dives',
     list: [
       {
-        title: 'Settings',
+        title: 'Attribution',
         path: '/dashboard/settings',
         icon: <MdOutlineSettings />,
       },
       {
-        title: 'Help',
+        title: 'Cohorts',
         path: '/dashboard/help',
         icon: <MdHelpCenter />,
       },
@@ -78,24 +90,24 @@ const menuItems = [
 
 const Sidebar = () => {
   return (
-    <div className='sticky top-[40px] '>
-      <div className='flex items-center gap-[20px] mb-[20px]'>
+    <div className='sticky'>
+      <div className='flex flex-col items-center mb-[20px]'>
         <Image
-          src='/images.jpeg'
+          src='/orcaLogo.png'
           alt='profile'
-          width='50'
-          height='50'
-          className='rounded-[50%] object-cover'
+          width='80'
+          height='80'
+          className=''
         />
-        <div className='flex flex-col'>
-          <span className='font-bold'>John Doe</span>{' '}
-          <span className='text-[#b7bac1]'>Admin</span>
-        </div>
+        <h1 className='text-[28px] text-center text-black font-bold mt-6 leading-7'>
+          - Demo Company -
+        </h1>
+        <IoMdInformationCircleOutline className='text-black mt-5 h-6 w-5' />
       </div>
       <ul>
         {menuItems.map((cat) => (
           <li key={cat.title}>
-            <span className='text-[#b7bac1] font-bold text-[13px] my-[10px]'>
+            <span className='text-black font-bold text-[13px] my-[10px]'>
               {cat.title}
             </span>
             {cat.list.map((item) => (
@@ -104,7 +116,7 @@ const Sidebar = () => {
           </li>
         ))}
       </ul>
-      <button className=' p-[20px] flex items-center gap-[10px] hover:bg-[#2e374a] my-[5px] rounded-[10px] w-full'>
+      <button className=' p-[20px] flex items-center gap-[10px] hover:bg-[#BAB5A9] my-[5px] rounded-[10px] w-full'>
         <MdLogout />
         Logout
       </button>
