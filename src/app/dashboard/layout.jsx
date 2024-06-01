@@ -3,7 +3,7 @@ import Navbar from '../ui/dashboard/navbar/navbar';
 
 const layout = ({ children }) => {
   return (
-    <div className='flex'>
+    <div className='flex h-[100vh]'>
       <div className='flex-[1.2] p-[12px]'>
         <Sidebar />
       </div>

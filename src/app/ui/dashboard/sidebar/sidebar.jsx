@@ -1,3 +1,5 @@
+'use client';
+import React, { useState } from 'react';
 import {
   MdAttachMoney,
   MdDashboard,
@@ -10,22 +12,11 @@ import {
   MdHelpCenter,
   MdLogout,
 } from 'react-icons/md';
+import { IoMdInformationCircleOutline } from 'react-icons/io';
 import MenuLink from './menuLink/menuLink';
 import Image from 'next/image';
 
-import { IoMdInformationCircleOutline } from 'react-icons/io';
-
 const menuItems = [
-  {
-    title: '',
-    list: [
-      {
-        title: 'Snapshot',
-        path: '/dashboard',
-        icon: <MdDashboard />,
-      },
-    ],
-  },
   {
     title: 'Business',
     list: [
@@ -89,34 +80,59 @@ const menuItems = [
 ];
 
 const Sidebar = () => {
+  const [openMenus, setOpenMenus] = useState({});
+
+  const toggleMenu = (title) => {
+    setOpenMenus((prevOpenMenus) => ({
+      ...prevOpenMenus,
+      [title]: !prevOpenMenus[title],
+    }));
+  };
+
   return (
-    <div className='sticky'>
-      <div className='flex flex-col items-center mb-[20px]'>
-        <Image
-          src='/orcaLogo.png'
-          alt='profile'
-          width='80'
-          height='80'
-          className=''
+    <div className='sticky h-full flex flex-col justify-between'>
+      <div>
+        <div className='flex flex-col items-center mb-[20px]'>
+          <Image
+            src='/orcaLogo.png'
+            alt='profile'
+            width='80'
+            height='80'
+            className=''
+          />
+          <h1 className='text-[28px] text-center text-black font-bold mt-6 leading-7'>
+            - Demo Company -
+          </h1>
+          <IoMdInformationCircleOutline className='text-black mt-5 h-6 w-5' />
+        </div>
+        <MenuLink
+          item={{
+            title: 'Snapshot',
+            path: '/dashboard',
+            icon: <MdDashboard />,
+          }}
         />
-        <h1 className='text-[28px] text-center text-black font-bold mt-6 leading-7'>
-          - Demo Company -
-        </h1>
-        <IoMdInformationCircleOutline className='text-black mt-5 h-6 w-5' />
+        <ul>
+          {menuItems.map((cat) => (
+            <li key={cat.title}>
+              {cat.title && (
+                <div
+                  className='flex justify-between items-center p-[10px] my-[5px] italic cursor-pointer hover:bg-[#BAB5A9] rounded-[5px] text-black text-[13px]'
+                  onClick={() => toggleMenu(cat.title)}
+                >
+                  {cat.title}
+                  <span>{openMenus[cat.title] ? '-' : '+'}</span>
+                </div>
+              )}
+              {openMenus[cat.title] &&
+                cat.list.map((item) => (
+                  <MenuLink key={item.title} item={item} />
+                ))}
+            </li>
+          ))}
+        </ul>
       </div>
-      <ul>
-        {menuItems.map((cat) => (
-          <li key={cat.title}>
-            <span className='text-black font-bold text-[13px] my-[10px]'>
-              {cat.title}
-            </span>
-            {cat.list.map((item) => (
-              <MenuLink key={item.title} item={item} />
-            ))}
-          </li>
-        ))}
-      </ul>
-      <button className=' p-[20px] flex items-center gap-[10px] hover:bg-[#BAB5A9] my-[5px] rounded-[10px] w-full'>
+      <button className='p-[20px] flex items-center gap-[10px] text-black hover:bg-[#BAB5A9] my-[5px] rounded-[5px] w-full'>
         <MdLogout />
         Logout
       </button>

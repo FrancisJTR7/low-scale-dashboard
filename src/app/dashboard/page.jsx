@@ -5,7 +5,7 @@ import Transactions from '../ui/dashboard/transactions/transactions';
 
 const Dashboard = () => {
   return (
-    <div className=' flex gap-[20px] mt-[20px]'>
+    <div className='flex gap-[20px] pt-[20px]'>
       <div className='flex-[3] flex flex-col gap-[20px]'>
         <div className='flex gap-[20px] justify-between'>
           <Card />
