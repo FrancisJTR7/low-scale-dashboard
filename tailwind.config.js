@@ -16,6 +16,9 @@ module.exports = {
         soft: '#182237',
         tsoft: '#b7bac1',
       },
+      fontFamily: {
+        'pp-object-sans': ['PP Object Sans', 'sans-serif'],
+      },
     },
   },
   plugins: [],
