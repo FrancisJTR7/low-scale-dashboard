@@ -41,9 +41,9 @@ const kpiItems = [
 ];
 const Kpi = () => {
   return (
-    <div className='space-y-2 w-[20rem]'>
+    <div className='space-y-2 w-[20rem] h-min'>
       {kpiItems.map((item, index) => (
-        <div key={index} className='text-center p-4 bg-gray-100 rounded-lg'>
+        <div key={index} className='text-center p-4 bg-[#F3F1EE] rounded-lg'>
           <div className='text-[.8rem] font-extrabold text-black'>
             {item.title}
           </div>
