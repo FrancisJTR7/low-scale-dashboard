@@ -134,7 +134,7 @@ const DailyRevenue = () => {
   };
 
   return (
-    <div className=' w-[78.95%] h-min overflow-hidden self-start'>
+    <div className=' w-[79%] h-min overflow-hidden self-start'>
       <HighchartsReact highcharts={Highcharts} options={options} />
     </div>
   );

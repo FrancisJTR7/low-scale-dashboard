@@ -6,7 +6,7 @@ import { MdDashboard, MdLogout } from 'react-icons/md';
 
 const Sidebar = () => {
   return (
-    <div className='min-w-[16rem] p-[12px] sticky h-full flex flex-col justify-between'>
+    <div className='min-w-[16rem] p-[12px] sticky top-0 h-full flex flex-col justify-between'>
       <div>
         <div className='flex flex-col items-center mb-[20px]'>
           <Image
