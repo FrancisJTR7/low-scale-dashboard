@@ -7,8 +7,8 @@ const AcquisitionMetricsChart = () => {
   const options = {
     chart: {
       backgroundColor: '#F3F1EE',
-      width: 1600,
-      height: 350,
+      width: 1100,
+      height: 500,
     },
     title: {
       text: 'Acquisition Metrics',
@@ -113,7 +113,7 @@ const AcquisitionMetricsChart = () => {
   };
 
   return (
-    <div className=' rounded-lg '>
+    <div className='rounded-lg '>
       <HighchartsReact highcharts={Highcharts} options={options} />
     </div>
   );
