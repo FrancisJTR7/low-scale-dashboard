@@ -19,8 +19,10 @@ const Snapshot = () => {
         <Paidvsorganic />
         <SessionsVsCVRChart />
       </div>
-      <MyResponsiveLine />
-      <LineChart />
+      <div className='flex flex-col'>
+        <LineChart />
+        <MyResponsiveLine />
+      </div>
     </div>
   );
 };

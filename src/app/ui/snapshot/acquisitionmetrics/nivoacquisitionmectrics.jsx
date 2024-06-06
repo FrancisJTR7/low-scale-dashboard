@@ -44,7 +44,6 @@ const MyLineChart = () => {
 
   return (
     <div className='h-[450px] w-full bg-[#F3F1EE]'>
-      <div>.</div>
       <ResponsiveLine
         data={data}
         margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
