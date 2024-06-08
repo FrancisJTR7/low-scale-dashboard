@@ -11,7 +11,7 @@ import { Chart } from 'chart.js';
 const Snapshot = () => {
   return (
     <div className='flex flex-col gap-[20px] pt-[20px] w-full h-[100vh]'>
-      <div className='flex w-full gap-[20px]'>
+      <div className='flex w-[81%] gap-[20px]'>
         <Kpi />
         <DailyRevenue />
       </div>

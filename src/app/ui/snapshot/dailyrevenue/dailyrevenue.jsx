@@ -8,7 +8,7 @@ const DailyRevenue = () => {
     chart: {
       type: 'area',
       backgroundColor: '#F3F1EE',
-      height: '42.5%',
+      height: '59.25%',
       borderRadius: 8,
     },
     title: {
@@ -65,7 +65,7 @@ const DailyRevenue = () => {
           0, 0, 0, 0, 0, 0, 0, 0,
         ],
         color: '#2E86C1',
-        type: 'line',
+        type: 'spline',
       },
       {
         name: 'Target Revenue (Running)',
@@ -74,7 +74,7 @@ const DailyRevenue = () => {
           0, 0, 0, 0, 0, 0, 0,
         ],
         color: '#F39C12',
-        type: 'line',
+        type: 'spline',
       },
       {
         name: 'New Revenue (Running)',
@@ -83,7 +83,7 @@ const DailyRevenue = () => {
           0, 0, 0, 0, 0, 0,
         ],
         color: '#8E44AD',
-        type: 'line',
+        type: 'spline',
       },
       {
         name: 'Spend (Running)',
@@ -92,7 +92,7 @@ const DailyRevenue = () => {
           10000, 5000, 0, 0, 0, 0, 0, 0, 0,
         ],
         color: '#E74C3C',
-        type: 'line',
+        type: 'spline',
       },
       {
         name: 'Target Spend (Running)',
@@ -101,7 +101,7 @@ const DailyRevenue = () => {
           0, 0, 0, 0, 0, 0, 0, 0, 0,
         ],
         color: '#34495E',
-        type: 'line',
+        type: 'spline',
       },
       {
         name: 'Actual Revenue (Daily)',
@@ -110,7 +110,7 @@ const DailyRevenue = () => {
           0, 0, 0, 0, 0, 0, 0,
         ],
         color: '#1ABC9C',
-        type: 'line',
+        type: 'spline',
       },
       {
         name: 'Target Revenue (Daily)',
@@ -119,7 +119,7 @@ const DailyRevenue = () => {
           0, 0, 0, 0, 0, 0,
         ],
         color: '#9B59B6',
-        type: 'line',
+        type: 'spline',
       },
       {
         name: 'Delta Running Total Revenue',
@@ -128,7 +128,7 @@ const DailyRevenue = () => {
           55000, 60000, 65000, 70000, 75000, 80000, 85000, 90000, 95000,
         ],
         color: '#E74C3C',
-        type: 'line',
+        type: 'spline',
       },
     ],
   };

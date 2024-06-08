@@ -5,46 +5,71 @@ const kpiItems = [
   {
     title: 'Spend',
     value: '$152,164',
-    change: '3%',
+    change: 0.03,
     positive: true,
   },
   {
     title: 'New Revenue',
     value: '$377,715',
-    change: '1%',
-    positive: false,
+    change: -0.01,
+    positive: true,
   },
   {
     title: 'CAC',
     value: '$69',
-    change: '21%',
+    change: 0.21,
     positive: false,
   },
   {
     title: 'Return Revenue',
     value: '$210,654',
-    change: '5%',
-    positive: false,
+    change: 0.05,
+    positive: true,
   },
   {
     title: 'Total Revenue',
     value: '$588,369',
-    change: '3%',
-    positive: false,
+    change: -0.03,
+    positive: true,
   },
   {
     title: 'bROAS',
     value: '387%',
-    change: '6%',
-    positive: false,
+    change: -0.06,
+    positive: true,
   },
 ];
+
+const getMetricColor = (change, positive) => {
+  if (positive) {
+    if (change >= 0) {
+      return 'positive';
+    } else if (change < -0.05) {
+      return 'negative';
+    } else {
+      return 'neutral';
+    }
+  } else {
+    if (change <= 0) {
+      return 'positive';
+    } else if (change > 0.05) {
+      return 'negative';
+    } else {
+      return 'neutral';
+    }
+  }
+};
+
+const formatChange = (change) => {
+  return `${Math.abs(change) * 100}%`;
+};
+
 const Kpi = () => {
   return (
-    <div className='space-y-2 w-[20rem] h-min'>
+    <div className='space-y-2 w-[15rem] h-min'>
       {kpiItems.map((item, index) => (
         <div key={index} className='text-center p-4 bg-[#F3F1EE] rounded-lg'>
-          <div className='text-[.8rem] font-extrabold text-black'>
+          <div className='text-[.8rem] font-bold text-black'>
             {item.title}
           </div>
           <div className='flex justify-center items-center gap-2'>
@@ -55,13 +80,14 @@ const Kpi = () => {
               className={clsx(
                 'flex items-center px-1 h-5 font-extrabold rounded-md text-xs',
                 {
-                  'text-green-500 bg-green-200': item.positive,
-                  'text-red-500 bg-red-200': !item.positive,
+                  'text-green-500 bg-green-200': getMetricColor(item.change, item.positive) === 'positive',
+                  'text-yellow-500 bg-yellow-100': getMetricColor(item.change, item.positive) === 'neutral',
+                  'text-red-500 bg-red-200': getMetricColor(item.change, item.positive) === 'negative',
                 }
               )}
             >
-              {item.positive ? <FaCaretUp /> : <FaCaretDown />}
-              {item.change}
+              {item.change >= 0 ? <FaCaretUp /> : <FaCaretDown />}
+              {formatChange(item.change)}
             </div>
           </div>
         </div>
