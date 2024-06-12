@@ -68,10 +68,8 @@ const Kpi = () => {
   return (
     <div className='space-y-2 w-[15rem] h-min'>
       {kpiItems.map((item, index) => (
-        <div key={index} className='text-center p-4 bg-[#F3F1EE] rounded-lg'>
-          <div className='text-[.8rem] font-bold text-black'>
-            {item.title}
-          </div>
+        <div key={index} className='text-center p-4 bg-[#F3F1EE] rounded-xl'>
+          <div className='text-[.8rem] font-bold text-black'>{item.title}</div>
           <div className='flex justify-center items-center gap-2'>
             <div className='text-2xl font-extrabold text-black'>
               {item.value}
@@ -80,9 +78,12 @@ const Kpi = () => {
               className={clsx(
                 'flex items-center px-1 h-5 font-extrabold rounded-md text-xs',
                 {
-                  'text-green-500 bg-green-200': getMetricColor(item.change, item.positive) === 'positive',
-                  'text-yellow-500 bg-yellow-100': getMetricColor(item.change, item.positive) === 'neutral',
-                  'text-red-500 bg-red-200': getMetricColor(item.change, item.positive) === 'negative',
+                  'text-green-500 bg-green-200':
+                    getMetricColor(item.change, item.positive) === 'positive',
+                  'text-yellow-500 bg-yellow-100':
+                    getMetricColor(item.change, item.positive) === 'neutral',
+                  'text-red-500 bg-red-200':
+                    getMetricColor(item.change, item.positive) === 'negative',
                 }
               )}
             >

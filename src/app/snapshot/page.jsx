@@ -1,17 +1,23 @@
+'use client';
+
 import React from 'react';
-import AcquisitionMetricsChart from '../ui/snapshot/acquisitionmetrics/acquisitionmetrics';
-import MyResponsiveLine from '../ui/snapshot/acquisitionmetrics/nivoacquisitionmectrics';
-import DailyRevenue from '../ui/snapshot/dailyrevenue/dailyrevenue';
-import Kpi from '../ui/snapshot/kpi/kpi';
-import Paidvsorganic from '../ui/snapshot/paidvsorganic/paidvsorganic';
-import SessionsVsCVRChart from '../ui/snapshot/sessionscvr/sessionscvr';
-import LineChart from '../ui/snapshot/acquisitionmetrics/chartjsacquisitionmetrics';
+import AcquisitionMetricsChart from '../components/snapshot/acquisitionmetrics/acquisitionmetrics';
+import MyResponsiveLine from '../components/snapshot/acquisitionmetrics/nivoacquisitionmectrics';
+import DailyRevenue from '../components/snapshot/dailyrevenue/dailyrevenue';
+import Kpi from '../components/snapshot/kpi/kpi';
+import Paidvsorganic from '../components/snapshot/paidvsorganic/paidvsorganic';
+import SessionsVsCVRChart from '../components/snapshot/sessionscvr/sessionscvr';
+import LineChart from '../components/snapshot/acquisitionmetrics/chartjsacquisitionmetrics';
 import { Chart } from 'chart.js';
+import { DatePickerWithRange } from '../components/snapshot/daterange/daterange';
+// import { DatePickerWithRangeShad } from '../components/snapshot/daterange/daterangeshad';
 
 const Snapshot = () => {
   return (
     <div className='flex flex-col gap-[20px] pt-[20px] w-full h-[100vh]'>
-      <div className='flex w-[81%] gap-[20px]'>
+      <DatePickerWithRange />
+      {/* <DatePickerWithRangeShad /> */}
+      <div className='flex w-full gap-[20px]'>
         <Kpi />
         <DailyRevenue />
       </div>
