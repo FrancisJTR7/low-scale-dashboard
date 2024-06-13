@@ -76,7 +76,7 @@ const Kpi = () => {
             </div>
             <div
               className={clsx(
-                'flex items-center px-1 h-5 font-extrabold rounded-md text-xs',
+                'flex items-center px-1 h-5 font-extrabold rounded-[4px] text-xs',
                 {
                   'text-green-500 bg-green-200':
                     getMetricColor(item.change, item.positive) === 'positive',
