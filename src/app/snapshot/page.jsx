@@ -7,11 +7,15 @@ import SessionsVsCVRChart from '../components/snapshot/sessionscvr/sessionscvr';
 import LineChart from '../components/snapshot/acquisitionmetrics/chartjsacquisitionmetrics';
 import { Chart } from 'chart.js';
 import { DatePickerWithRange } from '../components/snapshot/daterange/daterange';
+import ProjectedRevenue from '../components/snapshot/projectedrevenue/projectedrevenue';
 
 const Snapshot = () => {
   return (
     <div className='flex flex-col gap-[20px] pt-[20px] h-full w-full pr-4 max-xl:px-4'>
-      <DatePickerWithRange />
+      <div className='flex justify-between w-full'>
+        <ProjectedRevenue />
+        <DatePickerWithRange />
+      </div>
       <div className='flex w-full gap-[20px] h-min '>
         <Kpi />
         <DailyRevenue />
@@ -20,13 +24,13 @@ const Snapshot = () => {
         <Paidvsorganic />
         <SessionsVsCVRChart />
       </div>
-      <div className='w-full'>
+      <div className='w-full h-min'>
         <AcquisitionMetricsChart />
       </div>
-      <div className='flex flex-col hidden'>
+      {/* <div className='flex flex-col hidden'>
         <LineChart />
         <MyResponsiveLine />
-      </div>
+      </div> */}
     </div>
   );
 };
