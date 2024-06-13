@@ -10,9 +10,8 @@ import { DatePickerWithRange } from '../components/snapshot/daterange/daterange'
 
 const Snapshot = () => {
   return (
-    <div className='flex flex-col gap-[20px] pt-[20px] h-full w-full pr-4 '>
+    <div className='flex flex-col gap-[20px] pt-[20px] h-full w-full pr-4 max-xl:px-4'>
       <DatePickerWithRange />
-
       <div className='flex w-full gap-[20px] h-min '>
         <Kpi />
         <DailyRevenue />
