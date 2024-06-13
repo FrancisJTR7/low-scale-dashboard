@@ -298,7 +298,7 @@ const DailyRevenue = () => {
     chart: {
       type: 'area',
       backgroundColor: '#F3F1EE',
-      height: '59.25%',
+      height: '550px',
       borderRadius: 8,
     },
     title: {
@@ -401,7 +401,7 @@ const DailyRevenue = () => {
   };
 
   return (
-    <div className=' w-[79%] h-min overflow-hidden self-start'>
+    <div className='w-full '>
       <HighchartsReact highcharts={Highcharts} options={options} />
     </div>
   );

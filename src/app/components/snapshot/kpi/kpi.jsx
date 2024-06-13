@@ -1,3 +1,5 @@
+'use client';
+
 import clsx from 'clsx';
 import { FaCaretUp, FaCaretDown } from 'react-icons/fa6';
 
@@ -66,7 +68,7 @@ const formatChange = (change) => {
 
 const Kpi = () => {
   return (
-    <div className='space-y-2 w-[15rem] h-min'>
+    <div className='space-y-2.5 w-[15rem]'>
       {kpiItems.map((item, index) => (
         <div key={index} className='text-center p-4 bg-[#F3F1EE] rounded-xl'>
           <div className='text-[.8rem] font-bold text-black'>{item.title}</div>

@@ -1,14 +1,22 @@
 'use client';
 
+import React, { useEffect } from 'react';
 import Highcharts from 'highcharts';
+import HighchartsExporting from 'highcharts/modules/exporting';
 import HighchartsReact from 'highcharts-react-official';
 
 const SessionsVsCVRChart = () => {
+  useEffect(() => {
+    if (typeof Highcharts === 'object') {
+      HighchartsExporting(Highcharts);
+    }
+  }, []);
+
   const options = {
     chart: {
       type: 'line',
       backgroundColor: '#F3F1EE',
-      width: 1100,
+      borderRadius: '12px',
     },
     title: {
       text: 'Sessions vs CVR',
@@ -89,7 +97,11 @@ const SessionsVsCVRChart = () => {
     ],
   };
 
-  return <HighchartsReact highcharts={Highcharts} options={options} />;
+  return (
+    <div className='w-full '>
+      <HighchartsReact highcharts={Highcharts} options={options} />
+    </div>
+  );
 };
 
 export default SessionsVsCVRChart;

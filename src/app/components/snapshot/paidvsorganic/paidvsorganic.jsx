@@ -1,14 +1,22 @@
 'use client';
 
+import React, { useEffect } from 'react';
 import Highcharts from 'highcharts';
+import HighchartsExporting from 'highcharts/modules/exporting';
 import HighchartsReact from 'highcharts-react-official';
 
 const Paidvsorganic = () => {
+  useEffect(() => {
+    if (typeof Highcharts === 'object') {
+      HighchartsExporting(Highcharts);
+    }
+  }, []);
+
   const options = {
     chart: {
       type: 'pie',
       backgroundColor: '#F3F1EE',
-      height: '100%',
+      borderRadius: '12px',
     },
     title: {
       text: 'Paid vs Organic',
@@ -61,7 +69,7 @@ const Paidvsorganic = () => {
   };
 
   return (
-    <div className='rounded-lg w-[32rem]  bg-[#F3F1EE] px-[6rem] h-[full]'>
+    <div className='rounded-[12px] w-[40%] '>
       <HighchartsReact highcharts={Highcharts} options={options} />
     </div>
   );

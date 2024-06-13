@@ -2,9 +2,9 @@ import Sidebar from '../components/sidebar/sidebar';
 
 const layout = ({ children }) => {
   return (
-    <div className='flex  w-[100vw] font-pp-object-sans'>
+    <div className='flex font-pp-object-sans'>
       <Sidebar />
-      <div className='w-full'>{children}</div>
+      <div className='w-[95%] overflow-x-hidden '>{children}</div>
     </div>
   );
 };
