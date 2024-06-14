@@ -16,44 +16,50 @@ export function DatePickerWithRange({ className }) {
   });
 
   return (
-    <div className={cn('grid gap-2  ', className)}>
-      <Popover className=''>
-        <PopoverTrigger asChild>
-          <Button
-            id='date'
-            variant={'outline'}
-            className={cn(
-              'w-[300px] justify-start text-left font-normal bg-white rounded-xl text-black border-white hover:bg-gray-300 hover:text-black ',
-              !date && 'text-muted-foreground'
-            )}
-          >
-            <CalendarIcon className='mr-2 h-4 w-4' />
-            {date?.from ? (
-              date.to ? (
-                <>
-                  {format(date.from, 'LLL dd, y')} -{' '}
-                  {format(date.to, 'LLL dd, y')}
-                </>
+    <div className='flex items-center'>
+      <div className='text-xs text-black px-2 flex-col items-center text-center '>
+        <h1 className='font-[800]'> Date Range</h1>
+        <h2 className='opacity-50'> Default MTD</h2>
+      </div>
+      <div className={cn('grid gap-2  ', className)}>
+        <Popover className=''>
+          <PopoverTrigger asChild>
+            <Button
+              id='date'
+              variant={'outline'}
+              className={cn(
+                'w-[300px] justify-start text-left font-normal bg-white rounded-xl text-black border-white hover:bg-gray-300 hover:text-black ',
+                !date && 'text-muted-foreground'
+              )}
+            >
+              <CalendarIcon className='mr-2 h-4 w-4' />
+              {date?.from ? (
+                date.to ? (
+                  <>
+                    {format(date.from, 'LLL dd, y')} -{' '}
+                    {format(date.to, 'LLL dd, y')}
+                  </>
+                ) : (
+                  format(date.from, 'LLL dd, y')
+                )
               ) : (
-                format(date.from, 'LLL dd, y')
-              )
-            ) : (
-              <span>Pick a date</span>
-            )}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className='w-auto p-0' align='start'>
-          <Calendar
-            initialFocus
-            mode='range'
-            defaultMonth={date?.from}
-            selected={date}
-            onSelect={setDate}
-            numberOfMonths={2}
-            className='bg-white text-black'
-          />
-        </PopoverContent>
-      </Popover>
+                <span>Pick a date</span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className='w-auto p-0' align='start'>
+            <Calendar
+              initialFocus
+              mode='range'
+              defaultMonth={date?.from}
+              selected={date}
+              onSelect={setDate}
+              numberOfMonths={2}
+              className='bg-white text-black'
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
     </div>
   );
 }

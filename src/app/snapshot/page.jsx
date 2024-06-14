@@ -11,8 +11,8 @@ import ProjectedRevenue from '../components/snapshot/projectedrevenue/projectedr
 
 const Snapshot = () => {
   return (
-    <div className='flex flex-col gap-[20px] pt-[20px] h-full w-full pr-4 max-xl:px-4'>
-      <div className='flex justify-between w-full'>
+    <div className='flex flex-col gap-[20px] pt-[30px] h-full w-full pr-4 max-xl:px-4'>
+      <div className='flex mb-[-10px] justify-between items-center w-full'>
         <ProjectedRevenue />
         <DatePickerWithRange />
       </div>
