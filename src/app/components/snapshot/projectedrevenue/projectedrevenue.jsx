@@ -5,7 +5,7 @@ const ProjectedRevenue = () => {
   return (
     <div className='text-black flex flex-col items-center w-[24rem]'>
       <h2 className='font-extrabold text-[.75rem] '>
-        This Month's Projected Revenue
+        This Month&apos;s Projected Revenue
       </h2>
 
       <div className='flex items-center leading-7 '>
