@@ -2,7 +2,6 @@
 
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import Kpi from '../kpi/kpi';
 
 const DailyRevenue = () => {
   const metrics = {
