@@ -2,6 +2,7 @@
 
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
+import Kpi from '../kpi/kpi';
 
 const DailyRevenue = () => {
   const metrics = {
@@ -401,7 +402,7 @@ const DailyRevenue = () => {
   };
 
   return (
-    <div className='w-full '>
+    <div className='w-full grid justify-items-stretch'>
       <HighchartsReact highcharts={Highcharts} options={options} />
     </div>
   );

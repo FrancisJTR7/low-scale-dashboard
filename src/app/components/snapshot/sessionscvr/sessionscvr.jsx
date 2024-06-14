@@ -98,7 +98,7 @@ const SessionsVsCVRChart = () => {
   };
 
   return (
-    <div className='w-full '>
+    <div className='w-full grid justify-items-stretch'>
       <HighchartsReact highcharts={Highcharts} options={options} />
     </div>
   );
