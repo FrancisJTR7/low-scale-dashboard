@@ -16,7 +16,7 @@ const Snapshot = () => {
         <ProjectedRevenue />
         <DatePickerWithRange />
       </div>
-      <div className='flex w-full gap-[20px] h-min '>
+      <div className='flex w-full gap-[20px] h-min max-md:flex-col'>
         <Kpi />
         <DailyRevenue />
       </div>

@@ -16,10 +16,10 @@ export function DatePickerWithRange({ className }) {
   });
 
   return (
-    <div className='flex items-center'>
-      <div className='text-xs text-black px-2 flex-col items-center text-center '>
-        <h1 className='font-[800]'> Date Range</h1>
-        <h2 className='opacity-50'> Default MTD</h2>
+    <div className='flex items-center   '>
+      <div className='text-xs text-black pr-2 flex-col items-center text-center '>
+        <h1 className='font-[800] text-nowrap'> Date Range</h1>
+        <h2 className='opacity-50 text-nowrap'> Default MTD</h2>
       </div>
       <div className={cn('grid gap-2  ', className)}>
         <Popover className=''>
@@ -28,7 +28,7 @@ export function DatePickerWithRange({ className }) {
               id='date'
               variant={'outline'}
               className={cn(
-                'w-[300px] justify-start text-left font-normal bg-white rounded-xl text-black border-white hover:bg-gray-300 hover:text-black ',
+                'w-[260px] max-md:w-[240px] justify-start text-left font-normal bg-white rounded-xl text-black border-white hover:bg-gray-300 hover:text-black ',
                 !date && 'text-muted-foreground'
               )}
             >

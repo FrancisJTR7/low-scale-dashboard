@@ -68,9 +68,12 @@ const formatChange = (change) => {
 
 const Kpi = () => {
   return (
-    <div className='space-y-2.5 w-[15rem]'>
+    <div className='space-y-2.5 w-[15rem] max-md:w-full flex flex-wrap items-center justify-between max-md:space-y-0 max-md:gap-y-4'>
       {kpiItems.map((item, index) => (
-        <div key={index} className='text-center p-4 bg-[#F3F1EE] rounded-xl'>
+        <div
+          key={index}
+          className='text-center p-4 bg-[#F3F1EE] rounded-xl max-md:w-[32%] w-full'
+        >
           <div className='text-[.8rem] font-bold text-black'>{item.title}</div>
           <div className='flex justify-center items-center gap-2'>
             <div className='text-2xl font-extrabold text-black'>
