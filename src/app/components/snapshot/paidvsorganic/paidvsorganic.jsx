@@ -69,7 +69,7 @@ const Paidvsorganic = () => {
   };
 
   return (
-    <div className='rounded-[12px] w-[400px] '>
+    <div className='rounded-[12px] w-[400px] max-md:w-[240px] max-sm:w-full'>
       <HighchartsReact highcharts={Highcharts} options={options} />
     </div>
   );

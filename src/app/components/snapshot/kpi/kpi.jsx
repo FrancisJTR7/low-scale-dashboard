@@ -72,7 +72,7 @@ const Kpi = () => {
       {kpiItems.map((item, index) => (
         <div
           key={index}
-          className='text-center p-4 bg-[#F3F1EE] rounded-xl max-md:w-[32%] w-full'
+          className='text-center p-4 bg-[#F3F1EE] rounded-xl max-md:w-[32%] max-sm:w-[48.5%] w-full'
         >
           <div className='text-[.8rem] font-bold text-black'>{item.title}</div>
           <div className='flex justify-center items-center gap-2'>

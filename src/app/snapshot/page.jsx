@@ -12,15 +12,15 @@ import ProjectedRevenue from '../components/snapshot/projectedrevenue/projectedr
 const Snapshot = () => {
   return (
     <div className='flex flex-col gap-[20px] pt-[30px] h-full w-full pr-4 max-xl:px-4'>
-      <div className='flex mb-[-10px] justify-between items-center w-full'>
+      <div className='flex mb-[-10px] justify-between items-center w-full max-sm:flex-col max-sm:gap-y-3 max-sm:mb-[2px]'>
         <ProjectedRevenue />
         <DatePickerWithRange />
       </div>
-      <div className='flex w-full gap-[20px] h-min max-md:flex-col'>
+      <div className='flex w-full gap-[20px] h-min max-md:flex-col '>
         <Kpi />
         <DailyRevenue />
       </div>
-      <div className='flex w-full gap-[20px]'>
+      <div className='flex w-full gap-[20px] max-sm:flex-col'>
         <Paidvsorganic />
         <SessionsVsCVRChart />
       </div>
