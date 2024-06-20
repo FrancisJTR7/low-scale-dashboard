@@ -1,6 +1,3 @@
-'use client';
-
-import { useSession } from 'next-auth/react';
 import AcquisitionMetricsChart from '../components/snapshot/acquisitionmetrics/acquisitionmetrics';
 import MyResponsiveLine from '../components/snapshot/acquisitionmetrics/nivoacquisitionmectrics';
 import DailyRevenue from '../components/snapshot/dailyrevenue/dailyrevenue';
@@ -11,27 +8,8 @@ import LineChart from '../components/snapshot/acquisitionmetrics/chartjsacquisit
 import { Chart } from 'chart.js';
 import { DatePickerWithRange } from '../components/snapshot/daterange/daterange';
 import ProjectedRevenue from '../components/snapshot/projectedrevenue/projectedrevenue';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
-export default function Snapshot() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/signin');
-    }
-  }, [status, router]);
-
-  if (status === 'loading') {
-    return <div>Loading...</div>;
-  }
-
-  if (!session) {
-    return null;
-  }
-
+const Snapshot = () => {
   return (
     <div className='flex flex-col gap-[20px] pt-[30px] h-full w-full pr-4 max-xl:px-4'>
       <div className='flex mb-[-10px] justify-between items-center w-full max-sm:flex-col max-sm:gap-y-3 max-sm:mb-[2px]'>
@@ -50,9 +28,11 @@ export default function Snapshot() {
         <AcquisitionMetricsChart />
       </div>
       {/* <div className='flex flex-col hidden'>
-        <LineChart />
-        <MyResponsiveLine />
-      </div> */}
+<LineChart />
+<MyResponsiveLine />
+</div> */}
     </div>
   );
-}
+};
+
+export default Snapshot;

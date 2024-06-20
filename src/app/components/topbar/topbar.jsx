@@ -15,7 +15,7 @@ const Topbar = () => {
 
   return (
     <div className='h-14 hidden max-xl:flex bg-gradient-to-t'>
-      <div className='fixed top-0 left-0 right-0 mx-0 z-10 h-[6.5rem] pt-2 px-24 max-md:px-12 bg-gradient-to-b from-[#cec8bb] via-[#cec8bb] to-[rgba(206,200,187,.0)] '>
+      <div className='fixed top-0 left-0 right-0 mx-0 z-10 h-[6.5rem] pt-2 px-24 max-md:px-12 bg-gradient-to-b from-[#cec8bb] via-[#cec8bb] via-60% to-[rgba(206,200,187,.0)] '>
         <div className='flex justify-between items-center mt-2'>
           <RiMenu4Fill
             onMouseDown={handleClick}
