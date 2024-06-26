@@ -1,15 +1,27 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsExporting from 'highcharts/modules/exporting';
 import HighchartsReact from 'highcharts-react-official';
 
 const Paidvsorganic = () => {
+  const [data, setData] = useState([]);
+
   useEffect(() => {
-    if (typeof Highcharts === 'object') {
-      HighchartsExporting(Highcharts);
+    async function fetchData() {
+      try {
+        const response = await fetch('/api/data');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     }
+    fetchData();
   }, []);
 
   const options = {
@@ -71,6 +83,10 @@ const Paidvsorganic = () => {
   return (
     <div className='rounded-[12px] w-[400px] max-md:w-[240px] max-sm:w-full'>
       <HighchartsReact highcharts={Highcharts} options={options} />
+      <div>
+        <h1>BigQuery Data</h1>
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      </div>
     </div>
   );
 };
