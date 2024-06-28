@@ -10,6 +10,7 @@ import { DatePickerWithRange } from '../components/snapshot/daterange/daterange'
 import ProjectedRevenue from '../components/snapshot/projectedrevenue/projectedrevenue';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 
 export default async function Snapshot() {
   const supabase = createClient();
@@ -39,6 +40,7 @@ export default async function Snapshot() {
       <div className='w-full h-min'>
         <AcquisitionMetricsChart />
       </div>
+      <Link href={'/snapshot/snaptest'}>Snaptest</Link>
       {/* <div className='flex flex-col hidden'>
 <LineChart />
 <MyResponsiveLine />

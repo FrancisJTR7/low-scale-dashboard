@@ -15,8 +15,9 @@ const Paidvsorganic = () => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = await response.json();
-        console.log(data);
+        const result = await response.json();
+        console.log(result);
+        setData(result);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -85,7 +86,7 @@ const Paidvsorganic = () => {
       <HighchartsReact highcharts={Highcharts} options={options} />
       <div>
         <h1>BigQuery Data</h1>
-        <pre>{JSON.stringify(data, null, 2)}</pre>
+        {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
       </div>
     </div>
   );
