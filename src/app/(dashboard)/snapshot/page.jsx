@@ -1,13 +1,10 @@
-import AcquisitionMetricsChart from '../components/snapshot/acquisitionmetrics/acquisitionmetrics';
-import MyResponsiveLine from '../components/snapshot/acquisitionmetrics/nivoacquisitionmectrics';
-import DailyRevenue from '../components/snapshot/dailyrevenue/dailyrevenue';
-import Kpi from '../components/snapshot/kpi/kpi';
-import Paidvsorganic from '../components/snapshot/paidvsorganic/paidvsorganic';
-import SessionsVsCVRChart from '../components/snapshot/sessionscvr/sessionscvr';
-import LineChart from '../components/snapshot/acquisitionmetrics/chartjsacquisitionmetrics';
-import { Chart } from 'chart.js';
-import { DatePickerWithRange } from '../components/snapshot/daterange/daterange';
-import ProjectedRevenue from '../components/snapshot/projectedrevenue/projectedrevenue';
+import AcquisitionMetricsChart from './_components/acquisitionmetrics';
+import DailyRevenue from './_components/dailyrevenue';
+import Kpi from './_components/kpi';
+import Paidvsorganic from './_components/paidvsorganic';
+import SessionsVsCVRChart from './_components/sessionscvr';
+import { DatePickerWithRange } from './_components/daterange';
+import ProjectedRevenue from './_components/projectedrevenue';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
@@ -23,8 +20,20 @@ export default async function Snapshot() {
     return redirect('/login');
   }
 
+  const { data: users, error } = await supabase.from('users').select('*');
+
+  if (error) {
+    console.error('Error fetching users:', error);
+    return <div>Error fetching users</div>;
+  }
+
   return (
     <div className='flex flex-col gap-[20px] pt-[30px] h-full w-full pr-4 max-xl:px-4'>
+      {users && (
+        <div>
+          <h2>{JSON.stringify(users, null, 2)}</h2>
+        </div>
+      )}
       <div className='flex mb-[-10px] justify-between items-center w-full max-sm:flex-col max-sm:gap-y-3 max-sm:mb-[2px]'>
         <ProjectedRevenue />
         <DatePickerWithRange />
@@ -41,10 +50,6 @@ export default async function Snapshot() {
         <AcquisitionMetricsChart />
       </div>
       <Link href={'/snapshot/snaptest'}>Snaptest</Link>
-      {/* <div className='flex flex-col hidden'>
-<LineChart />
-<MyResponsiveLine />
-</div> */}
     </div>
   );
 }

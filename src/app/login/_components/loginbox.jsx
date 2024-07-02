@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 
-import { login } from '../../login/actions';
+import { login } from '../actions';
 import { cn } from '@src/lib/utils';
 import { Button } from '../../ui/button';
 import { Input } from '../../ui/input';
@@ -79,7 +79,7 @@ const LogInBox = ({ className, ...props }) => {
                   autoComplete='email'
                   autoCorrect='off'
                   disabled={isLoading}
-                  className='border-gray-300 text-gray-300 rounded-[4px]'
+                  className='border-gray-300 focus:text-gray-700 text-gray-300 rounded-[4px]'
                 />
               </div>
               <div className='grid gap-1'>
@@ -95,7 +95,7 @@ const LogInBox = ({ className, ...props }) => {
                   autoComplete='password'
                   autoCorrect='off'
                   disabled={isLoading}
-                  className='border-gray-300 text-gray-300 rounded-[4px]'
+                  className='border-gray-300 focus:text-gray-700 text-gray-300 rounded-[4px]'
                 />
               </div>
               <Button

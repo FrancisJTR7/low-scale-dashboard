@@ -1,5 +1,5 @@
-import Sidebar from '../components/sidebar/sidebar';
-import Topbar from '../components/topbar/topbar';
+import Sidebar from './_components/sidebar/sidebar';
+import Topbar from './_components/topbar/topbar';
 
 const layout = ({ children }) => {
   return (
@@ -8,7 +8,9 @@ const layout = ({ children }) => {
         <Sidebar />
       </div>
       <Topbar />
-      <div className='w-[95%] max-xl:w-full overflow-x-hidden'>{children}</div>
+      <div className='w-[95%] max-xl:w-full overflow-x-hidden pl-2'>
+        {children}
+      </div>
     </div>
   );
 };

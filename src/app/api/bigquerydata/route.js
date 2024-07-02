@@ -28,15 +28,3 @@ export async function GET(req) {
     );
   }
 }
-
-export function POST(req) {
-  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
-}
-
-export function PUT(req) {
-  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
-}
-
-export function DELETE(req) {
-  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
-}
