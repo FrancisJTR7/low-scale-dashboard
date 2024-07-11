@@ -3,7 +3,17 @@ import { NextResponse } from 'next/server';
 
 export async function GET(req) {
   try {
-    const data = await fetchData();
+    const { searchParams } = new URL(req.url);
+    const tableIdentifier = searchParams.get('tableIdentifier');
+
+    if (!tableIdentifier) {
+      return NextResponse.json(
+        { error: 'Missing tableIdentifier' },
+        { status: 400 }
+      );
+    }
+
+    const data = await fetchData(tableIdentifier);
 
     // Convert Big objects to string if needed
     const formattedData = data.map((item) => {

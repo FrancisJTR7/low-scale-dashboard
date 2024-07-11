@@ -1,7 +1,7 @@
 const bigquery = require('./client');
 
-async function fetchData() {
-  const query = 'SELECT * FROM `analytics.pacing__armra` limit 1';
+async function fetchData(tableIdentifier) {
+  const query = `SELECT * FROM \`analytics.pacing__${tableIdentifier}\` LIMIT 1`;
   const options = {
     query: query,
     location: 'US', // Specify the location if needed
