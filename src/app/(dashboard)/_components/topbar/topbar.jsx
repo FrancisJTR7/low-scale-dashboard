@@ -1,12 +1,24 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { RiCloseLine, RiMenu4Fill } from 'react-icons/ri';
 import Image from 'next/image';
 import Sidebar from '../sidebar/sidebar';
+import { useQueryClient } from '@tanstack/react-query';
 
-const Topbar = () => {
-  // State to toggle the sidebar
+const Topbar = ({ userInfo, companyInfo, portfolioList, tableIdentifier }) => {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    // Cache the data
+    queryClient.setQueryData('userData', {
+      userInfo,
+      companyInfo,
+      portfolioList,
+      tableIdentifier,
+    });
+  }, [queryClient, userInfo, companyInfo, portfolioList, tableIdentifier]);
+
   const [showElement, setShowElement] = useState(false);
   // Function to toggle the sidebar
   const handleClick = () => {

@@ -1,12 +1,28 @@
 'use client';
 
+import React, { useState, useEffect } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsExporting from 'highcharts/modules/exporting';
 import HighchartsReact from 'highcharts-react-official';
 import useBigQueryData from '../../../hooks/useFetchData';
+import { useQueryClient } from '@tanstack/react-query';
 
-const Paidvsorganic = ({ tableIdentifier }) => {
+const Paidvsorganic = () => {
+  const queryClient = useQueryClient();
+  const [tableIdentifier, setTableIdentifier] = useState(null);
+
+  useEffect(() => {
+    const cachedData = queryClient.getQueryData('userData');
+    if (cachedData) {
+      setTableIdentifier(cachedData.tableIdentifier);
+    }
+  }, [queryClient]);
+
   const { data, error, isLoading } = useBigQueryData(tableIdentifier);
+
+  if (!tableIdentifier) {
+    return <div>Loading...</div>;
+  }
 
   const options = {
     chart: {
