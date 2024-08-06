@@ -6,7 +6,7 @@ const keyFilePath = path.join(process.cwd(), 'bigquery-key.json');
 
 // Create a BigQuery client
 const bigquery = new BigQuery({
-  projectId: 'dtco-tydo',
+  projectId: 'orcaanalytics',
   keyFilename: keyFilePath,
 });
 

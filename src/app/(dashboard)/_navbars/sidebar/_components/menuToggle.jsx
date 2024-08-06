@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import MenuLink from '../menuLink/menuLink';
+import MenuLink from './menuLink';
 import {
   MdShoppingBag,
   MdSupervisedUserCircle,

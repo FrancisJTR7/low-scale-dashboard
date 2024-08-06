@@ -20,14 +20,13 @@ const Topbar = ({ userInfo, companyInfo, portfolioList, tableIdentifier }) => {
   }, [queryClient, userInfo, companyInfo, portfolioList, tableIdentifier]);
 
   const [showElement, setShowElement] = useState(false);
-  // Function to toggle the sidebar
   const handleClick = () => {
     setShowElement(!showElement);
   };
 
   return (
     <div className='h-14 hidden max-xl:flex bg-gradient-to-t'>
-      <div className='fixed top-0 left-0 right-0 mx-0 z-10 h-[6.5rem] pt-2 px-24 max-md:px-12 bg-gradient-to-b from-[#cec8bb] via-[#cec8bb] via-60% to-[rgba(206,200,187,.0)] '>
+      <div className='fixed top-0 left-0 right-0 mx-0 z-10 h-[5rem] pt-2 px-24 max-md:px-12 backdrop-blur-[7px] bg-[#cec8bb]/85 '>
         <div className='flex justify-between items-center mt-2'>
           <RiMenu4Fill
             onMouseDown={handleClick}
@@ -49,7 +48,7 @@ const Topbar = ({ userInfo, companyInfo, portfolioList, tableIdentifier }) => {
                   />
                 </div>
               </div>
-              <div className='w-full h-full fixed top-0 left-0 bg-black z-[9] opacity-35'></div>
+              <div className='w-full h-[100vh] fixed top-0 left-0 bottom-0 bg-black z-[9] opacity-35'></div>
             </div>
           )}
           <Image

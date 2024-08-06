@@ -2,25 +2,32 @@
 
 import React, { useState, useEffect } from 'react';
 import Highcharts from 'highcharts';
-import HighchartsExporting from 'highcharts/modules/exporting';
 import HighchartsReact from 'highcharts-react-official';
 import useBigQueryData from '../../../hooks/useFetchData';
 import { useQueryClient } from '@tanstack/react-query';
+import { useSelector } from 'react-redux';
 
 const Paidvsorganic = () => {
-  const queryClient = useQueryClient();
-  const [tableIdentifier, setTableIdentifier] = useState(null);
+  // const queryClient = useQueryClient();
+  // const [tableIdentifier, setTableIdentifier] = useState(null);
+  // const [userInfo, setUserInfo] = useState(null);
+  // const [companyInfo, setCompanyInfo] = useState(null);
+  const selectedTableIdentifier = useSelector(
+    (state) => state.company.selectedTableIdentifier
+  );
 
-  useEffect(() => {
-    const cachedData = queryClient.getQueryData('userData');
-    if (cachedData) {
-      setTableIdentifier(cachedData.tableIdentifier);
-    }
-  }, [queryClient]);
+  // useEffect(() => {
+  //   const cachedData = queryClient.getQueryData('userData');
+  //   if (cachedData) {
+  //     setTableIdentifier(cachedData.tableIdentifier);
+  //     setUserInfo(cachedData.userInfo);
+  //     setCompanyInfo(cachedData.companyInfo);
+  //   }
+  // }, [queryClient]);
 
-  const { data, error, isLoading } = useBigQueryData(tableIdentifier);
+  const { data } = useBigQueryData(selectedTableIdentifier);
 
-  if (!tableIdentifier) {
+  if (!selectedTableIdentifier) {
     return <div>Loading...</div>;
   }
 
@@ -84,7 +91,11 @@ const Paidvsorganic = () => {
     <div className='rounded-[12px] w-[400px] max-md:w-[240px] max-sm:w-full'>
       <HighchartsReact highcharts={Highcharts} options={options} />
       <div>
-        <h1>BigQuery Data</h1>
+        <h1>Selected Company ID: {selectedTableIdentifier}</h1>
+        {/* <h1>BigQuery Data</h1>
+        <h1>User Information</h1>
+        <p>Username: {userInfo.email}</p>
+        <p>Company: {companyInfo.id}</p> */}
         <pre>{JSON.stringify(data, null, 2)}</pre>
       </div>
     </div>

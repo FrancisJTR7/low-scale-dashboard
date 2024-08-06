@@ -1,72 +1,107 @@
 'use client';
 
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { FaCaretUp, FaCaretDown } from 'react-icons/fa6';
-
-const kpiItems = [
-  {
-    title: 'Spend',
-    value: '$152,164',
-    change: 0.03,
-    positive: true,
-  },
-  {
-    title: 'New Revenue',
-    value: '$377,715',
-    change: -0.01,
-    positive: true,
-  },
-  {
-    title: 'CAC',
-    value: '$69',
-    change: 0.21,
-    positive: false,
-  },
-  {
-    title: 'Return Revenue',
-    value: '$210,654',
-    change: 0.05,
-    positive: true,
-  },
-  {
-    title: 'Total Revenue',
-    value: '$588,369',
-    change: -0.03,
-    positive: true,
-  },
-  {
-    title: 'bROAS',
-    value: '387%',
-    change: -0.06,
-    positive: true,
-  },
-];
-
-const getMetricColor = (change, positive) => {
-  if (positive) {
-    if (change >= 0) {
-      return 'positive';
-    } else if (change < -0.05) {
-      return 'negative';
-    } else {
-      return 'neutral';
-    }
-  } else {
-    if (change <= 0) {
-      return 'positive';
-    } else if (change > 0.05) {
-      return 'negative';
-    } else {
-      return 'neutral';
-    }
-  }
-};
+import { useQueryClient } from '@tanstack/react-query';
+import useBigQueryData from '../../../hooks/useFetchData';
+import { useSelector } from 'react-redux';
 
 const formatChange = (change) => {
-  return `${Math.abs(change) * 100}%`;
+  return `${(Math.abs(change) * 100).toFixed(0)}%`;
+};
+
+const formatNumber = (number) => {
+  return `$${new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(number)}`;
 };
 
 const Kpi = () => {
+  // const queryClient = useQueryClient();
+  // const [tableIdentifier, setTableIdentifier] = useState(null);
+  // const [loading, setLoading] = useState(true);
+
+  // useEffect(() => {
+  //   const cachedData = queryClient.getQueryData('userData');
+  //   if (cachedData) {
+  //     setTableIdentifier(cachedData.tableIdentifier);
+  //   }
+  // }, [queryClient]);
+
+  const selectedTableIdentifier = useSelector(
+    (state) => state.company.selectedTableIdentifier
+  );
+
+  const { data } = useBigQueryData(selectedTableIdentifier);
+
+  if (!selectedTableIdentifier) {
+    return <div>Loading...</div>;
+  }
+
+  const kpiItems =
+    data && data.length > 0
+      ? [
+          {
+            title: 'Spend',
+            value: data[0].aggregate_actual_spend,
+            change: data[0].delta_aggregate_spend,
+            positive: true,
+          },
+          {
+            title: 'New Revenue',
+            value: data[0].aggregate_actual_new_revenue,
+            change: data[0].delta_aggregate_new_revenue,
+            positive: true,
+          },
+          {
+            title: 'CAC',
+            value: data[0].aggregate_actual_cac,
+            change: data[0].delta_aggregate_cac,
+            positive: false,
+          },
+          {
+            title: 'Return Revenue',
+            value: data[0].aggregate_actual_return_revenue,
+            change: data[0].delta_aggregate_return_revenue,
+            positive: true,
+          },
+          {
+            title: 'Total Revenue',
+            value: data[0].aggregate_actual_total_revenue,
+            change: data[0].delta_aggregate_total_revenue,
+            positive: true,
+          },
+          {
+            title: 'bROAS',
+            value: data[0].aggregate_actual_broas,
+            change: data[0].delta_aggregate_broas8,
+            positive: true,
+          },
+        ]
+      : [];
+
+  const getMetricColor = (change, positive) => {
+    if (positive) {
+      if (change >= 0) {
+        return 'positive';
+      } else if (change < -0.05) {
+        return 'negative';
+      } else {
+        return 'neutral';
+      }
+    } else {
+      if (change <= 0) {
+        return 'positive';
+      } else if (change > 0.05) {
+        return 'negative';
+      } else {
+        return 'neutral';
+      }
+    }
+  };
+
   return (
     <div className='space-y-2.5 w-[15rem] max-md:w-full flex flex-wrap items-center justify-between max-md:space-y-0 max-md:gap-y-4'>
       {kpiItems.map((item, index) => (
@@ -77,7 +112,7 @@ const Kpi = () => {
           <div className='text-[.8rem] font-bold text-black'>{item.title}</div>
           <div className='flex justify-center items-center gap-2'>
             <div className='text-2xl font-extrabold text-black'>
-              {item.value}
+              {formatNumber(item.value)}
             </div>
             <div
               className={clsx(

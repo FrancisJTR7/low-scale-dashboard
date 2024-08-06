@@ -1,6 +1,9 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { ReactQueryProvider } from '../lib/react-query-provider';
+import { CSPostHogProvider } from './providers';
+import StoreProvider from '../state/storeProvider';
+
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
@@ -11,9 +14,13 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang='en'>
-      <body className={inter.className}>
-        <ReactQueryProvider>{children}</ReactQueryProvider>
-      </body>
+      <CSPostHogProvider>
+        <StoreProvider>
+          <body className={inter.className}>
+            <ReactQueryProvider>{children}</ReactQueryProvider>
+          </body>
+        </StoreProvider>
+      </CSPostHogProvider>
     </html>
   );
 }

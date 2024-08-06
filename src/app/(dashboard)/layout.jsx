@@ -1,12 +1,14 @@
 import React from 'react';
 import { createClient } from '@/utils/supabase/server';
-import Sidebar from './_components/sidebar/sidebar';
-import Topbar from './_components/topbar/topbar';
+import Sidebar from './_navbars/sidebar/sidebar';
+import Topbar from './_navbars/topbar/topbar';
 import { redirect } from 'next/navigation';
+import { CSPostHogProvider } from '../providers';
 
 const fetchUserData = async () => {
   const supabase = createClient();
 
+  // User login
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -15,32 +17,35 @@ const fetchUserData = async () => {
     return redirect('/login');
   }
 
+  // Variable to store user email
   const userEmail = user.email;
 
-  const { data: userInfo, error: userError } = await supabase
+  // Fetch data from users table based on email
+  const { data: userInfo } = await supabase
     .from('users')
     .select('*')
     .eq('email', userEmail);
 
-  if (userError) {
-    throw new Error('User not found');
-  }
-
+  // Variable to store authenticated user's company id
   const userId = userInfo[0]?.company_id;
 
+  // Fetch company data by company id tying to user
   const { data: companyInfo } = await supabase
     .from('companies')
     .select('*')
     .eq('id', userId);
 
+  // Variable to store user's table identifier
+  const tableIdentifier = companyInfo[0]?.table_identifier;
+
+  // Variable to store the authenticated user's portfolio id
   const userPortfolioId = userInfo[0]?.portfolio_id;
 
+  // Fetch portfolio companies data by portfolio id tying to user
   const { data: portfolioList } = await supabase
     .from('portfolio_companies')
-    .select('*, companies(company_name)')
+    .select('*, companies(*) ')
     .eq('portfolio_id', userPortfolioId);
-
-  const tableIdentifier = companyInfo[0]?.table_identifier;
 
   return {
     userInfo: userInfo[0] || {},

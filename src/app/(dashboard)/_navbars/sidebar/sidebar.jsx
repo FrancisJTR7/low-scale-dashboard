@@ -1,8 +1,11 @@
 import { IoMdInformationCircleOutline } from 'react-icons/io';
-import MenuLink from './menuLink/menuLink';
-import MenuToggle from './menuToggle/menuToggle';
+import MenuLink from './_components/menuLink';
+import MenuToggle from './_components/menuToggle';
 import Image from 'next/image';
 import { MdDashboard, MdLogout } from 'react-icons/md';
+import { logout } from '@/src/app/api/auth/logout';
+import Dropdown from './_components/dropDown';
+import UserSettings from './_components/userSettings';
 
 const Sidebar = () => {
   return (
@@ -29,11 +32,18 @@ const Sidebar = () => {
           }}
         />
         <MenuToggle />
+        <Dropdown />
       </div>
-      <button className='p-[20px] flex items-center gap-[10px] text-black hover:bg-[#BAB5A9] my-[5px] rounded-[5px] w-full'>
-        <MdLogout />
-        Logout
-      </button>
+      <form action={logout}>
+        <button
+          type='submit'
+          className='p-[20px] flex items-center gap-[10px] text-black hover:bg-[#BAB5A9] my-[5px] rounded-[5px] w-full'
+        >
+          <MdLogout />
+          Logout
+        </button>
+      </form>
+      <UserSettings />
     </div>
   );
 };
