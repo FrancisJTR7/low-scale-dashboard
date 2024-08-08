@@ -103,7 +103,7 @@ const Kpi = () => {
   };
 
   return (
-    <div className='space-y-2.5 w-[15rem] max-md:w-full flex flex-wrap items-center justify-between max-md:space-y-0 max-md:gap-y-4'>
+    <div className='space-y-2.5  max-w-[15rem]  max-md:w-full flex flex-wrap items-center justify-between max-md:space-y-0 max-md:gap-y-4'>
       {kpiItems.map((item, index) => (
         <div
           key={index}

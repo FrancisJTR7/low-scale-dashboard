@@ -6,8 +6,8 @@ async function fetchData(tableIdentifier) {
   const kpiQuery = `
   WITH base AS (
     SELECT
-      FORMAT_DATE('%Y-%m', PARSE_DATE('%m/%d/%y', t.day)) AS month,
-      PARSE_DATE('%m/%d/%y', t.day) AS date,
+      FORMAT_DATE('%Y-%m', PARSE_DATE('%m/%d/%Y', t.day)) AS month,
+      PARSE_DATE('%m/%d/%Y', t.day) AS date,
       p.total_spend,
       p.new_orders,
       p.new_revenue,
@@ -19,10 +19,10 @@ async function fetchData(tableIdentifier) {
       CAST(t.return_orders AS NUMERIC) AS target_return_orders,
       CAST(t.return_revenue AS NUMERIC) AS target_return_revenue
     FROM 
-      \`analytics.pacing__${tableIdentifier}\` p 
+      \`orcaanalytics.analytics.pacing__${tableIdentifier}\` p 
     LEFT JOIN
-      \`google_sheets__${tableIdentifier}.projections\` t
-      ON PARSE_DATE('%m/%d/%y', t.day) = DATE(p.date)
+      \`orcaanalytics.google_sheets__${tableIdentifier}.projections\` t
+      ON PARSE_DATE('%m/%d/%Y', t.day) = DATE(p.date)
   ),
   dailypacing AS (
     SELECT
@@ -67,9 +67,9 @@ async function fetchData(tableIdentifier) {
     WHERE
       date >= '2023-01-01'
     GROUP BY
-      1, 2
+      month, date
     ORDER BY
-      2
+      date
   ),
   runningtotals AS (
     SELECT
@@ -120,199 +120,182 @@ async function fetchData(tableIdentifier) {
     FROM
       dailypacing
     WHERE
-      date >= '2024-07-01' and date <= '2024-07-31'
+      date >= DATE_TRUNC(CURRENT_DATE(), MONTH) AND date < CURRENT_DATE()
     GROUP BY
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+      month, date, actual_spend, actual_new_orders, actual_new_revenue, actual_return_orders, actual_return_revenue, actual_total_orders, actual_total_revenue, target_spend, target_new_orders, target_new_revenue, target_return_orders, target_return_revenue, target_total_orders, target_total_revenue
   )
-  SELECT
-    month,
-    date,
-    actual_spend,
-    actual_new_orders,
-    actual_new_revenue,
-    actual_return_orders,
-    actual_return_revenue,
-    actual_total_orders,
-    actual_total_revenue,
-    target_spend,
-    target_new_orders,
-    target_new_revenue,
-    target_return_orders,
-    target_return_revenue,
-    target_total_orders,
-    target_total_revenue,
-    running_total_actual_spend,
-    running_total_actual_new_orders,
-    running_total_actual_new_revenue,
-    running_total_actual_return_orders,
-    running_total_actual_return_revenue,
-    running_total_actual_total_orders,
-    running_total_actual_total_revenue,
-    running_total_target_spend,
-    running_total_target_new_orders,
-    running_total_target_new_revenue,
-    running_total_target_return_orders,
-    running_total_target_return_revenue,
-    running_total_target_total_orders,
-    running_total_target_total_revenue,
-    CASE 
-      WHEN running_total_target_spend = 0 THEN 0
-      ELSE (running_total_actual_spend - running_total_target_spend) / running_total_target_spend 
-    END AS delta_running_total_spend,
-    CASE 
-      WHEN running_total_target_new_revenue = 0 THEN 0
-      ELSE (running_total_actual_new_revenue - running_total_target_new_revenue) / running_total_target_new_revenue 
-    END AS delta_running_new_revenue,
-    CASE 
-      WHEN running_total_target_new_orders = 0 THEN 0
-      WHEN running_total_target_spend = 0 THEN 0
-      WHEN running_total_actual_new_orders = 0 THEN 0
-      ELSE ((running_total_actual_spend / running_total_actual_new_orders) - (running_total_target_spend / running_total_target_new_orders)) / (running_total_target_spend / running_total_target_new_orders)
-    END AS delta_running_cac,
-    CASE 
-      WHEN running_total_target_return_revenue = 0 THEN 0
-      ELSE (running_total_actual_return_revenue - running_total_target_return_revenue) / running_total_target_return_revenue 
-    END AS delta_running_return_revenue,
-    CASE 
-      WHEN running_total_target_total_revenue = 0 THEN 0
-      ELSE (running_total_actual_total_revenue - running_total_target_total_revenue) / running_total_target_total_revenue 
-    END AS delta_running_total_revenue,
-    CASE 
-      WHEN running_total_target_total_orders = 0 THEN 0
-      WHEN running_total_target_spend = 0 THEN 0
-      WHEN running_total_actual_total_orders = 0 THEN 0
-      ELSE ((running_total_actual_spend / running_total_actual_total_orders) - (running_total_target_spend / running_total_target_total_orders)) / (running_total_target_spend / running_total_target_total_orders)
-    END AS delta_running_cpo,
-    CASE 
-      WHEN running_total_target_new_orders = 0 THEN 0
-      WHEN running_total_target_spend = 0 THEN 0
-      WHEN running_total_actual_spend = 0 THEN 0
-      WHEN running_total_target_total_revenue = 0 THEN 0
-      ELSE ((running_total_actual_total_revenue / running_total_actual_spend) - (running_total_target_total_revenue / running_total_target_spend)) / (running_total_target_total_revenue / running_total_target_spend)
-    END AS delta_running_broas,
-    aggregate_actual_spend,
-    aggregate_actual_new_orders,
-    aggregate_actual_new_revenue,
-    CASE 
-      WHEN aggregate_actual_new_orders = 0 THEN 0
-      ELSE aggregate_actual_spend / aggregate_actual_new_orders 
-    END AS aggregate_actual_cac,
-    CASE 
-      WHEN aggregate_actual_spend = 0 THEN 0 
-      ELSE aggregate_actual_new_revenue / aggregate_actual_spend 
-    END AS aggregate_actual_roas,
-    CASE 
-      WHEN aggregate_actual_new_revenue = 0 THEN 0 
-      ELSE aggregate_actual_spend / aggregate_actual_new_revenue 
-    END AS aggregate_actual_acos,
-    CASE 
-      WHEN aggregate_actual_new_orders = 0 THEN 0
-      ELSE aggregate_actual_new_revenue / aggregate_actual_new_orders
-    END AS aggregate_actual_new_aov,
-    aggregate_actual_return_orders,
-    aggregate_actual_return_revenue,
-    CASE 
-      WHEN aggregate_actual_return_orders = 0 THEN 0
-      ELSE aggregate_actual_return_revenue / aggregate_actual_return_orders
-    END AS aggregate_actual_return_aov,
-    aggregate_actual_total_orders,
-    aggregate_actual_total_revenue,
-    CASE 
-      WHEN aggregate_actual_total_orders = 0 THEN 0
-      ELSE aggregate_actual_total_revenue / aggregate_actual_total_orders
-    END AS aggregate_actual_total_aov,
-    CASE 
-      WHEN aggregate_actual_total_orders = 0 THEN 0
-      ELSE aggregate_actual_spend / aggregate_actual_total_orders
-    END AS aggregate_actual_cpo,
-    CASE 
-      WHEN aggregate_actual_spend = 0 THEN 0
-      ELSE aggregate_actual_total_revenue / aggregate_actual_spend
-    END AS aggregate_actual_broas,
-    CASE 
-      WHEN aggregate_actual_total_revenue = 0 THEN 0
-      ELSE aggregate_actual_spend / aggregate_actual_total_revenue
-    END AS aggregate_actual_mer,
-    aggregate_target_spend,
-    aggregate_target_new_orders,
-    aggregate_target_new_revenue,
-    aggregate_target_return_orders,
-    aggregate_target_return_revenue,
-    aggregate_target_total_orders,
-    aggregate_target_total_revenue,
-    CASE 
-      WHEN aggregate_target_spend = 0 THEN 0
-      ELSE (aggregate_actual_spend - aggregate_target_spend) / aggregate_target_spend 
-    END AS delta_aggregate_spend,
-    CASE 
-      WHEN aggregate_target_new_revenue = 0 THEN 0
-      ELSE (aggregate_actual_new_revenue - aggregate_target_new_revenue) / aggregate_target_new_revenue 
-    END AS delta_aggregate_new_revenue,
-    CASE 
-      WHEN aggregate_target_new_orders = 0 THEN 0
-      WHEN aggregate_actual_new_orders = 0 THEN 0
-      WHEN aggregate_target_spend = 0 THEN 0
-      ELSE ((aggregate_actual_spend / aggregate_actual_new_orders) - (aggregate_target_spend / aggregate_target_new_orders)) / (aggregate_target_spend / aggregate_target_new_orders)
-    END AS delta_aggregate_cac,
-    CASE 
-      WHEN aggregate_target_spend = 0 THEN 0
-      WHEN aggregate_actual_spend = 0 THEN 0
-      WHEN aggregate_target_new_revenue = 0 THEN 0
-      ELSE ((aggregate_actual_new_revenue / aggregate_actual_spend) - (aggregate_target_new_revenue / aggregate_target_spend)) / (aggregate_target_new_revenue / aggregate_target_spend)
-    END AS delta_aggregate_roas,
-    CASE 
-      WHEN aggregate_actual_new_revenue = 0 THEN 0 
-      WHEN aggregate_target_new_revenue = 0 THEN 0
-      WHEN aggregate_target_spend = 0 THEN 0
-      ELSE ((aggregate_actual_spend / aggregate_actual_new_revenue) - (aggregate_target_spend / aggregate_target_new_revenue)) / (aggregate_target_spend / aggregate_target_new_revenue)
-    END AS delta_aggregate_acos,
-    CASE 
-      WHEN aggregate_actual_new_orders = 0 THEN 0
-      WHEN aggregate_target_new_orders = 0 THEN 0
-      WHEN aggregate_target_new_revenue = 0 THEN 0
-      ELSE ((aggregate_actual_new_revenue / aggregate_actual_new_orders) - (aggregate_target_new_revenue / aggregate_target_new_orders)) / (aggregate_target_new_revenue / aggregate_target_new_orders)
-    END AS delta_aggregate_new_aov,
-    CASE 
-      WHEN aggregate_target_return_revenue = 0 THEN 0
-      ELSE (aggregate_actual_return_revenue - aggregate_target_return_revenue) / aggregate_target_return_revenue 
-    END AS delta_aggregate_return_revenue,
-    CASE 
-      WHEN aggregate_actual_return_orders = 0 THEN 0
-      WHEN aggregate_target_return_orders = 0 THEN 0
-      WHEN aggregate_target_return_revenue = 0 THEN 0
-      ELSE ((aggregate_actual_return_revenue / aggregate_actual_return_orders) - (aggregate_target_return_revenue / aggregate_target_return_orders)) / (aggregate_target_return_revenue / aggregate_target_return_orders)
-    END AS delta_aggregate_return_aov,
-    CASE 
-      WHEN aggregate_target_total_revenue = 0 THEN 0
-      ELSE (aggregate_actual_total_revenue - aggregate_target_total_revenue) / aggregate_target_total_revenue 
-    END AS delta_aggregate_total_revenue,
-    CASE 
-      WHEN aggregate_actual_total_orders = 0 THEN 0
-      WHEN aggregate_target_total_orders = 0 THEN 0
-      WHEN aggregate_target_total_revenue = 0 THEN 0
-      ELSE ((aggregate_actual_total_revenue / aggregate_actual_total_orders) - (aggregate_target_total_revenue / aggregate_target_total_orders)) / (aggregate_target_total_revenue / aggregate_target_total_orders)
-    END AS delta_aggregate_total_aov,
-    CASE 
-      WHEN aggregate_target_total_orders = 0 THEN 0
-      WHEN aggregate_actual_total_orders = 0 THEN 0
-      WHEN aggregate_target_spend = 0 THEN 0
-      ELSE ((aggregate_actual_spend / aggregate_actual_total_orders) - (aggregate_target_spend / aggregate_target_total_orders)) / (aggregate_target_spend / aggregate_target_total_orders)
-    END AS delta_aggregate_cpo,
-    CASE 
-      WHEN aggregate_target_spend = 0 THEN 0
-      WHEN aggregate_actual_spend = 0 THEN 0
-      WHEN aggregate_target_total_revenue = 0 THEN 0
-      ELSE ((aggregate_actual_total_revenue / aggregate_actual_spend) - (aggregate_target_total_revenue / aggregate_target_spend)) / (aggregate_target_total_revenue / aggregate_target_spend)
-    END AS delta_aggregate_broas,
-    CASE 
-      WHEN aggregate_actual_total_revenue = 0 THEN 0 
-      WHEN aggregate_target_total_revenue = 0 THEN 0
-      WHEN aggregate_target_spend = 0 THEN 0
-      ELSE ((aggregate_actual_spend / aggregate_actual_total_revenue) - (aggregate_target_spend / aggregate_target_total_revenue)) / (aggregate_target_spend / aggregate_target_total_revenue)
-    END AS delta_aggregate_mer
-  FROM
-    runningtotals
-  ORDER BY date;
+SELECT
+  month,
+  date,
+  actual_spend,
+  actual_new_orders,
+  actual_new_revenue,
+  actual_return_orders,
+  actual_return_revenue,
+  actual_total_orders,
+  actual_total_revenue,
+  target_spend,
+  target_new_orders,
+  target_new_revenue,
+  target_return_orders,
+  target_return_revenue,
+  target_total_orders,
+  target_total_revenue,
+  running_total_actual_spend,
+  running_total_actual_new_orders,
+  running_total_actual_new_revenue,
+  running_total_actual_return_orders,
+  running_total_actual_return_revenue,
+  running_total_actual_total_orders,
+  running_total_actual_total_revenue,
+  running_total_target_spend,
+  running_total_target_new_orders,
+  running_total_target_new_revenue,
+  running_total_target_return_orders,
+  running_total_target_return_revenue,
+  running_total_target_total_orders,
+  running_total_target_total_revenue,
+  CASE
+    WHEN running_total_target_spend = 0 THEN 0
+    ELSE (running_total_actual_spend - running_total_target_spend) / running_total_target_spend
+  END AS delta_running_total_spend,
+  CASE
+    WHEN running_total_target_new_revenue = 0 THEN 0
+    ELSE (running_total_actual_new_revenue - running_total_target_new_revenue) / running_total_target_new_revenue
+  END AS delta_running_new_revenue,
+  CASE
+    WHEN running_total_target_new_orders = 0 THEN 0
+    WHEN running_total_target_spend = 0 THEN 0
+    WHEN running_total_actual_new_orders = 0 THEN 0
+    ELSE ((running_total_actual_spend / running_total_actual_new_orders) - (running_total_target_spend / running_total_target_new_orders)) / (running_total_target_spend / running_total_target_new_orders)
+  END AS delta_running_cac,
+  CASE
+    WHEN running_total_target_return_revenue = 0 THEN 0
+    ELSE (running_total_actual_return_revenue - running_total_target_return_revenue) / running_total_target_return_revenue
+  END AS delta_running_return_revenue,
+  CASE
+    WHEN running_total_target_total_revenue = 0 THEN 0
+    ELSE (running_total_actual_total_revenue - running_total_target_total_revenue) / running_total_target_total_revenue
+  END AS delta_running_total_revenue,
+  CASE
+    WHEN running_total_target_total_orders = 0 THEN 0
+    WHEN running_total_target_spend = 0 THEN 0
+    WHEN running_total_actual_total_orders = 0 THEN 0
+    ELSE ((running_total_actual_spend / running_total_actual_total_orders) - (running_total_target_spend / running_total_target_total_orders)) / (running_total_target_spend / running_total_target_total_orders)
+  END AS delta_running_cpo,
+  CASE
+    WHEN running_total_target_new_orders = 0 THEN 0
+    WHEN running_total_target_spend = 0 THEN 0
+    WHEN running_total_actual_spend = 0 THEN 0
+    ELSE ((running_total_actual_total_revenue / running_total_actual_spend) - (running_total_target_total_revenue / running_total_target_spend)) / (running_total_target_total_revenue / running_total_target_spend)
+  END AS delta_running_broas,
+  aggregate_actual_spend,
+  aggregate_actual_new_orders,
+  aggregate_actual_new_revenue,
+  CASE
+    WHEN aggregate_actual_new_orders = 0 THEN 0
+    ELSE aggregate_actual_spend / aggregate_actual_new_orders
+  END AS aggregate_actual_cac,
+  CASE
+    WHEN aggregate_actual_spend = 0 THEN 0
+    ELSE aggregate_actual_new_revenue / aggregate_actual_spend
+  END AS aggregate_actual_roas,
+  CASE
+    WHEN aggregate_actual_new_revenue = 0 THEN 0
+    ELSE aggregate_actual_spend / aggregate_actual_new_revenue
+  END AS aggregate_actual_acos,
+  CASE
+    WHEN aggregate_actual_new_orders = 0 THEN 0
+    ELSE aggregate_actual_new_revenue / aggregate_actual_new_orders
+  END AS aggregate_actual_new_aov,
+  aggregate_actual_return_orders,
+  aggregate_actual_return_revenue,
+  CASE
+    WHEN aggregate_actual_return_orders = 0 THEN 0
+    ELSE aggregate_actual_return_revenue / aggregate_actual_return_orders
+  END AS aggregate_actual_return_aov,
+  aggregate_actual_total_orders,
+  aggregate_actual_total_revenue,
+  CASE
+    WHEN aggregate_actual_total_orders = 0 THEN 0
+    ELSE aggregate_actual_total_revenue / aggregate_actual_total_orders
+  END AS aggregate_actual_total_aov,
+  CASE
+    WHEN aggregate_actual_total_orders = 0 THEN 0
+    ELSE aggregate_actual_spend / aggregate_actual_total_orders
+  END AS aggregate_actual_cpo,
+  CASE
+    WHEN aggregate_actual_spend = 0 THEN 0
+    ELSE aggregate_actual_total_revenue / aggregate_actual_spend
+  END AS aggregate_actual_broas,
+  CASE
+    WHEN aggregate_actual_total_revenue = 0 THEN 0
+    ELSE aggregate_actual_spend / aggregate_actual_total_revenue
+  END AS aggregate_actual_mer,
+  aggregate_target_spend,
+  aggregate_target_new_orders,
+  aggregate_target_new_revenue,
+  aggregate_target_return_orders,
+  aggregate_target_return_revenue,
+  aggregate_target_total_orders,
+  aggregate_target_total_revenue,
+  CASE
+    WHEN aggregate_target_spend = 0 THEN 0
+    ELSE (aggregate_actual_spend - aggregate_target_spend) / aggregate_target_spend
+  END AS delta_aggregate_spend,
+  CASE
+    WHEN aggregate_target_new_revenue = 0 THEN 0
+    ELSE (aggregate_actual_new_revenue - aggregate_target_new_revenue) / aggregate_target_new_revenue
+  END AS delta_aggregate_new_revenue,
+  CASE
+    WHEN aggregate_target_new_orders = 0 THEN 0
+    WHEN aggregate_actual_new_orders = 0 THEN 0
+    ELSE ((aggregate_actual_spend / aggregate_actual_new_orders) - (aggregate_target_spend / aggregate_target_new_orders)) / (aggregate_target_spend / aggregate_target_new_orders)
+  END AS delta_aggregate_cac,
+  CASE
+    WHEN aggregate_target_spend = 0 THEN 0
+    ELSE ((aggregate_actual_new_revenue / aggregate_actual_spend) - (aggregate_target_new_revenue / aggregate_target_spend)) / (aggregate_target_new_revenue / aggregate_target_spend)
+  END AS delta_aggregate_roas,
+  CASE
+    WHEN aggregate_actual_new_revenue = 0 THEN 0
+    ELSE ((aggregate_actual_spend / aggregate_actual_new_revenue) - (aggregate_target_spend / aggregate_target_new_revenue)) / (aggregate_target_spend / aggregate_target_new_revenue)
+  END AS delta_aggregate_acos,
+  CASE
+    WHEN aggregate_actual_new_orders = 0 THEN 0
+    ELSE ((aggregate_actual_new_revenue / aggregate_actual_new_orders) - (aggregate_target_new_revenue / aggregate_target_new_orders)) / (aggregate_target_new_revenue / aggregate_target_new_orders)
+  END AS delta_aggregate_new_aov,
+  CASE
+    WHEN aggregate_target_return_revenue = 0 THEN 0
+    ELSE (aggregate_actual_return_revenue - aggregate_target_return_revenue) / aggregate_target_return_revenue
+  END AS delta_aggregate_return_revenue,
+  CASE
+    WHEN aggregate_actual_return_orders = 0 THEN 0
+    ELSE ((aggregate_actual_return_revenue / aggregate_actual_return_orders) - (aggregate_target_return_revenue / aggregate_target_return_orders)) / (aggregate_target_return_revenue / aggregate_target_return_orders)
+  END AS delta_aggregate_return_aov,
+  CASE
+    WHEN aggregate_target_total_revenue = 0 THEN 0
+    ELSE (aggregate_actual_total_revenue - aggregate_target_total_revenue) / aggregate_target_total_revenue
+  END AS delta_aggregate_total_revenue,
+  CASE
+    WHEN aggregate_actual_total_orders = 0 THEN 0
+    ELSE ((aggregate_actual_total_revenue / aggregate_actual_total_orders) - (aggregate_target_total_revenue / aggregate_target_total_orders)) / (aggregate_target_total_revenue / aggregate_target_total_orders)
+  END AS delta_aggregate_total_aov,
+  CASE
+    WHEN aggregate_actual_total_orders = 0 THEN 0
+    ELSE ((aggregate_actual_spend / aggregate_actual_total_orders) - (aggregate_target_spend / aggregate_target_total_orders)) / (aggregate_target_spend / aggregate_target_total_orders)
+  END AS delta_aggregate_cpo,
+  CASE
+    WHEN aggregate_target_spend = 0 THEN 0
+    ELSE ((aggregate_actual_total_revenue / aggregate_actual_spend) - (aggregate_target_total_revenue / aggregate_target_spend)) / (aggregate_target_total_revenue / aggregate_target_spend)
+  END AS delta_aggregate_broas,
+  CASE
+    WHEN aggregate_actual_total_revenue = 0 THEN 0
+    ELSE ((aggregate_actual_spend / aggregate_actual_total_revenue) - (aggregate_target_spend / aggregate_target_total_revenue)) / (aggregate_target_spend / aggregate_target_total_revenue)
+  END AS delta_aggregate_mer
+FROM
+  runningtotals
+ORDER BY
+  date;
 `;
 
   const options = {

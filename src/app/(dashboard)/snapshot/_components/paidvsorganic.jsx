@@ -16,6 +16,7 @@ const Paidvsorganic = () => {
     (state) => state.company.selectedTableIdentifier
   );
 
+  const { startDate, endDate } = useSelector((state) => state.selectedDates);
   // useEffect(() => {
   //   const cachedData = queryClient.getQueryData('userData');
   //   if (cachedData) {
@@ -91,6 +92,11 @@ const Paidvsorganic = () => {
     <div className='rounded-[12px] w-[400px] max-md:w-[240px] max-sm:w-full'>
       <HighchartsReact highcharts={Highcharts} options={options} />
       <div>
+        <div>
+          <h1>Selected Date Range:</h1>
+          <p>Start Date: {startDate ? startDate.toString() : 'None'}</p>
+          <p>End Date: {endDate ? endDate.toString() : 'None'}</p>
+        </div>
         <h1>Selected Company ID: {selectedTableIdentifier}</h1>
         {/* <h1>BigQuery Data</h1>
         <h1>User Information</h1>

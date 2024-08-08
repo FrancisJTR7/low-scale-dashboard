@@ -5,7 +5,7 @@ const nextConfig = {
       fullUrl: true,
     },
   },
-  reactStrictMode: false,
+  reactStrictMode: true,
 };
 
 export default nextConfig;

@@ -9,12 +9,27 @@ const UserSettings = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const cachedData = queryClient.getQueryData('userData');
-    if (cachedData) {
-      setUserInfo(cachedData.userInfo);
-    }
-    setLoading(false);
-  }, [queryClient]);
+    const fetchData = async () => {
+      const cachedData = await queryClient.getQueryData('userData');
+      if (cachedData) {
+        setUserInfo(cachedData.userInfo);
+      }
+      setLoading(false);
+    };
+
+    fetchData();
+
+    const interval = setInterval(() => {
+      const data = queryClient.getQueryData('userData');
+      if (data && !userInfo) {
+        setUserInfo(data.userInfo);
+        setLoading(false);
+        clearInterval(interval);
+      }
+    }, 1); // Check every .005s for updated data
+
+    return () => clearInterval(interval); // Cleanup interval on unmount
+  }, [queryClient, userInfo]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -27,9 +42,9 @@ const UserSettings = () => {
       </div>
       <div className='pl-3'>
         <div className='text-black font-bold'>
-          {userInfo.first_name} {userInfo.last_name}
+          {userInfo?.first_name} {userInfo?.last_name}
         </div>
-        <div className='text-gray-600 font-[400]'>{userInfo.email}</div>
+        <div className='text-gray-600 font-[400]'>{userInfo?.email}</div>
       </div>
     </div>
   );

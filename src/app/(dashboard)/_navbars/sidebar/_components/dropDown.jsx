@@ -12,8 +12,8 @@ const Dropdown = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = () => {
-      const data = queryClient.getQueryData('userData');
+    const fetchData = async () => {
+      const data = await queryClient.getQueryData('userData');
       if (data) {
         setCachedData(data);
         setLoading(false);
@@ -35,7 +35,32 @@ const Dropdown = () => {
     };
 
     fetchData();
-  }, [queryClient, dispatch]);
+
+    const interval = setInterval(() => {
+      const data = queryClient.getQueryData('userData');
+      if (data && !cachedData) {
+        setCachedData(data);
+        setLoading(false);
+        clearInterval(interval);
+
+        // Get the initial selection and dispatch to store in Redux
+        const portfolioId = data.userInfo.portfolio_id;
+        if (portfolioId) {
+          const portfolioCompanies = data.portfolioList.filter(
+            (portfolio) => portfolio.portfolio_id === portfolioId
+          );
+          const companies = portfolioCompanies.flatMap((pc) => pc.companies);
+
+          if (companies.length > 0) {
+            const initialTableIdentifier = companies[0].table_identifier;
+            dispatch(selectCompany(initialTableIdentifier));
+          }
+        }
+      }
+    }, 5); // Check every .05s for updated data
+
+    return () => clearInterval(interval); // Cleanup interval on unmount
+  }, [queryClient, dispatch, cachedData]);
 
   if (loading) {
     return <div>Loading...</div>;

@@ -1,10 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
-import companyReducer from './companySlice'; // Update the path as needed
+import companyReducer from './companySlice';
+import selectedDatesReducer from './selectedDatesSlice';
 
 const store = configureStore({
   reducer: {
     company: companyReducer,
-    // other reducers can go here
+    selectedDates: selectedDatesReducer,
   },
 });
 
