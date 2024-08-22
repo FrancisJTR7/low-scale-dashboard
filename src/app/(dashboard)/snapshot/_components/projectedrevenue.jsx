@@ -3,7 +3,7 @@ import { FaCaretDown } from 'react-icons/fa6';
 
 const ProjectedRevenue = () => {
   return (
-    <div className='text-black flex flex-col items-center ml-2 w-min text-nowrap'>
+    <div className=' flex flex-col items-center ml-2 w-min text-nowrap'>
       <h2 className='font-extrabold text-[.75rem] '>
         This Month&apos;s Projected Revenue
       </h2>

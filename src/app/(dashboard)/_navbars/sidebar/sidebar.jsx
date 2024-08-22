@@ -1,3 +1,5 @@
+'use client';
+
 import { IoMdInformationCircleOutline } from 'react-icons/io';
 import MenuLink from './_components/menuLink';
 import MenuToggle from './_components/menuToggle';
@@ -6,10 +8,23 @@ import { MdDashboard, MdLogout } from 'react-icons/md';
 import { logout } from '@/src/app/api/auth/logout';
 import Dropdown from './_components/dropDown';
 import UserSettings from './_components/userSettings';
+import { Switch } from '../../../ui/switch';
+import { useSelector } from 'react-redux';
+import clsx from 'clsx';
 
 const Sidebar = () => {
+  const darkMode = useSelector((state) => state.theme.darkMode);
+  const selectedCompany = useSelector(
+    (state) => state.company.selectedCompanyName
+  );
+
   return (
-    <div className='min-w-[18rem] max-w-[18rem] h-[100vh]  bg-[#cec8bb] p-[12px] sticky top-0 flex flex-col justify-between'>
+    <div
+      className={clsx(
+        'min-w-[18rem] max-w-[18rem] h-[100vh] bg-beige p-[12px] sticky top-0 flex flex-col justify-between text-black',
+        darkMode && 'bg-stone text-orcgray'
+      )}
+    >
       <div>
         <div className='flex flex-col items-center mb-[20px]'>
           <Image
@@ -19,10 +34,15 @@ const Sidebar = () => {
             height='80'
             className=''
           />
-          <h1 className='text-[28px] text-center text-black font-bold mt-6 leading-7'>
-            - Demo Company -
+          <h1
+            className={clsx(
+              'text-[28px] text-center font-bold mt-6 leading-7 ',
+              darkMode && 'text-white'
+            )}
+          >
+            {selectedCompany}
           </h1>
-          <IoMdInformationCircleOutline className='text-black mt-5 h-6 w-5' />
+          <IoMdInformationCircleOutline className=' mt-5 h-6 w-5' />
         </div>
         <MenuLink
           item={{
@@ -33,16 +53,19 @@ const Sidebar = () => {
         />
         <MenuToggle />
         <Dropdown />
+        <div className='flex items-center space-x-2  mt-4'>
+          <Switch id='dark-mode-switch' />
+          <div className={clsx('font-extrabold', darkMode && 'hidden')}>
+            Light Mode
+          </div>
+          <div
+            className={clsx('font-extrabold text-white', !darkMode && 'hidden')}
+          >
+            Dark Mode
+          </div>
+        </div>
       </div>
-      <form action={logout}>
-        <button
-          type='submit'
-          className='p-[20px] flex items-center gap-[10px] text-black hover:bg-[#BAB5A9] my-[5px] rounded-[5px] w-full'
-        >
-          <MdLogout />
-          Logout
-        </button>
-      </form>
+
       <UserSettings />
     </div>
   );

@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   selectedTableIdentifier: null,
+  selectedCompanyName: null,
 };
 
 const companySlice = createSlice({
@@ -9,7 +10,8 @@ const companySlice = createSlice({
   initialState,
   reducers: {
     selectCompany: (state, action) => {
-      state.selectedTableIdentifier = action.payload;
+      state.selectedTableIdentifier = action.payload.tableIdentifier;
+      state.selectedCompanyName = action.payload.companyName;
     },
   },
 });

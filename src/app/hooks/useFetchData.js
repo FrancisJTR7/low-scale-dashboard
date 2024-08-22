@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
-const fetchBigQueryData = async (tableIdentifier) => {
+const fetchBigQueryData = async (tableIdentifier, queryType) => {
   const response = await fetch(
-    `/api/bigquerydata?tableIdentifier=${tableIdentifier}`
+    `/api/bigquerydata?tableIdentifier=${tableIdentifier}&queryType=${queryType}`
   );
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
@@ -10,10 +10,10 @@ const fetchBigQueryData = async (tableIdentifier) => {
   return response.json();
 };
 
-const useBigQueryData = (tableIdentifier) => {
+const useBigQueryData = (tableIdentifier, queryType) => {
   return useQuery({
-    queryKey: ['bigQueryData', tableIdentifier],
-    queryFn: () => fetchBigQueryData(tableIdentifier),
+    queryKey: ['bigQueryData', tableIdentifier, queryType],
+    queryFn: () => fetchBigQueryData(tableIdentifier, queryType),
     staleTime: 1000 * 60 * 1, // 1 minute
     cacheTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: true, // Refetch data on window focus

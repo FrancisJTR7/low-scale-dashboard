@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { addDays, format, startOfMonth, subDays } from 'date-fns';
+import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDates } from '../../../../state/selectedDatesSlice'; // Adjust the path as needed
@@ -13,17 +13,15 @@ export function DatePickerWithRange({ className }) {
   const dispatch = useDispatch();
   const { startDate, endDate } = useSelector((state) => state.selectedDates);
 
-  // Initialize the date state
   const [date, setDate] = React.useState({
     from: startDate,
     to: endDate,
   });
 
-  // Effect to dispatch initial dates if the state is empty
   React.useEffect(() => {
     if (!startDate || !endDate) {
-      const initialStartDate = startOfMonth(new Date());
-      const initialEndDate = subDays(new Date(), 1);
+      const initialStartDate = date.from || startDate;
+      const initialEndDate = date.to || endDate;
       dispatch(
         setSelectedDates({
           startDate: initialStartDate,
@@ -32,18 +30,43 @@ export function DatePickerWithRange({ className }) {
       );
       setDate({ from: initialStartDate, to: initialEndDate });
     }
-  }, [dispatch, startDate, endDate]);
+  }, [dispatch, startDate, endDate, date.from, date.to]);
 
   const handleSelect = (range) => {
-    setDate(range);
-    dispatch(setSelectedDates({ startDate: range.from, endDate: range.to }));
+    if (range?.from && range?.to) {
+      setDate(range);
+      dispatch(setSelectedDates({ startDate: range.from, endDate: range.to }));
+    } else if (range?.from) {
+      setDate((prevDate) => ({
+        ...prevDate,
+        from: range.from,
+        to: prevDate.to && range.from > prevDate.to ? range.from : prevDate.to,
+      }));
+      dispatch(
+        setSelectedDates({
+          startDate: range.from,
+          endDate: range.from > date.to ? range.from : date.to,
+        })
+      );
+    } else if (range?.to) {
+      setDate((prevDate) => ({
+        ...prevDate,
+        to: range.to,
+      }));
+      dispatch(
+        setSelectedDates({
+          startDate: date.from,
+          endDate: range.to,
+        })
+      );
+    }
   };
 
   return (
     <div className='flex items-center'>
-      <div className='text-xs text-black pr-2 flex-col items-center text-center'>
-        <h1 className='font-[800] text-nowrap'> Date Range</h1>
-        <h2 className='opacity-50 text-nowrap'> Default MTD</h2>
+      <div className='text-xs pr-2 flex-col items-center text-center'>
+        <h1 className='font-[800] text-nowrap'>Date Range</h1>
+        <h2 className='opacity-50 text-nowrap'>Default MTD</h2>
       </div>
       <div className={cn('grid gap-2', className)}>
         <Popover>

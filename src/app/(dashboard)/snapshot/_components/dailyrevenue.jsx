@@ -2,400 +2,429 @@
 
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
+import useBigQueryData from '../../../hooks/useFetchData';
+import { useSelector } from 'react-redux';
+import patternFill from 'highcharts/modules/pattern-fill';
+
+patternFill(Highcharts);
 
 const DailyRevenue = () => {
+  const darkMode = useSelector((state) => state.theme.darkMode);
+  const selectedTableIdentifier = useSelector(
+    (state) => state.company.selectedTableIdentifier
+  );
+
+  const { data, isLoading, error } = useBigQueryData(
+    selectedTableIdentifier,
+    'dailyRevenue'
+  );
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error || !data) {
+    return <div>Error loading data</div>;
+  }
+
   const metrics = {
-    date: [
-      '2024-06-01',
-      '2024-06-02',
-      '2024-06-03',
-      '2024-06-04',
-      '2024-06-05',
-      '2024-06-06',
-      '2024-06-07',
-      '2024-06-08',
-      '2024-06-09',
-      '2024-06-10',
-      '2024-06-11',
-      '2024-06-12',
-      '2024-06-13',
-      '2024-06-14',
-      '2024-06-15',
-      '2024-06-16',
-      '2024-06-17',
-      '2024-06-18',
-      '2024-06-19',
-      '2024-06-20',
-      '2024-06-21',
-      '2024-06-22',
-      '2024-06-23',
-      '2024-06-24',
-      '2024-06-25',
-      '2024-06-26',
-      '2024-06-27',
-      '2024-06-28',
-      '2024-06-29',
-      '2024-06-30',
-    ],
-    actual_spend: [
-      '12793.43',
-      '13562.50',
-      '12445.38',
-      '11318.74',
-      '12203.56',
-      '12018.39',
-      '11860.14',
-      '12020.97',
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-    ],
-    actual_new_revenue: [
-      '29146.00',
-      '38991.00',
-      '27407.00',
-      '29298.00',
-      '28902.00',
-      '24869.00',
-      '25697.00',
-      '31078.00',
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-    ],
-    actual_total_revenue: [
-      '44429.00',
-      '57491.00',
-      '45893.77',
-      '48887.27',
-      '47085.75',
-      '38200.81',
-      '42257.26',
-      '43290.00',
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-    ],
-    target_spend: [
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-      '11099.87',
-    ],
-    target_new_revenue: [
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-      '36434.46',
-    ],
-    target_total_revenue: [
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-      '54901.46',
-    ],
-    running_total_actual_spend: [
-      '12793.43',
-      '26355.93',
-      '38801.31',
-      '50120.05',
-      '62323.61',
-      '74342.00',
-      '86202.14',
-      '98223.11',
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-    ],
-    running_total_actual_new_revenue: [
-      '29146.00',
-      '68137.00',
-      '95544.00',
-      '124842.00',
-      '153744.00',
-      '178613.00',
-      '204310.00',
-      '235388.00',
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-    ],
+    date: data.map((item) => item.date.value),
+    actual_spend: data.map((item) => parseFloat(item.actual_spend) || 0),
+    actual_new_revenue: data.map(
+      (item) => parseFloat(item.actual_new_revenue) || 0
+    ),
+    actual_total_revenue: data.map(
+      (item) => parseFloat(item.actual_total_revenue) || 0
+    ),
+    target_spend: data.map((item) => parseFloat(item.target_spend) || 0),
+    target_new_revenue: data.map(
+      (item) => parseFloat(item.target_new_revenue) || 0
+    ),
+    target_total_revenue: data.map(
+      (item) => parseFloat(item.target_total_revenue) || 0
+    ),
+    running_total_actual_spend: data.map(
+      (item) => parseFloat(item.running_total_actual_spend) || 0
+    ),
+    running_total_actual_new_revenue: data.map(
+      (item) => parseFloat(item.running_total_actual_new_revenue) || 0
+    ),
+    running_total_actual_total_revenue: data.map(
+      (item) => parseFloat(item.running_total_actual_total_revenue) || 0
+    ),
+    running_total_target_total_revenue: data.map(
+      (item) => parseFloat(item.running_total_target_total_revenue) || 0
+    ),
+    running_total_target_new_revenue: data.map(
+      (item) => parseFloat(item.running_total_target_new_revenue) || 0
+    ),
+    delta_running_total_revenue_todate: data.map(
+      (item) => parseFloat(item.delta_running_total_revenue_todate) || 0
+    ),
   };
+
+  const colors = {
+    plotBackgroundColor: darkMode ? '#11161d' : '#f3f1ee',
+    textColor: darkMode ? '#98A4AE' : '#11161d',
+    tickLineColor: darkMode ? '#24282c' : '#cec8bb',
+    spendActual0: darkMode ? '#FA8CC8' : '#892951',
+    spendActual1: darkMode ? '#FA8CC8' : '#892951',
+    spendTarget0: darkMode ? '#FA8CC8' : '#892951',
+    spendTarget1: darkMode ? '#FA8CC8' : '#892951',
+    spendActualOpacity: darkMode ? 0.55 : 0.55,
+    spendTargetOpacity: darkMode ? 0.55 : 0.55,
+    totalRevColor0: darkMode ? '#49C5B1' : '#49C5B1',
+    totalRevColor1: darkMode ? '#49C5B1' : '#49C5B1',
+    totalRevOpacity: darkMode ? 0.8 : 1.0,
+    totalRevTargetColor0: darkMode ? '#196E64' : '#49C5B1',
+    totalRevTargetColor1: darkMode ? '#196E64' : '#49C5B1',
+    totalRevTargetOpacity: darkMode ? 0.5 : 0.6,
+    totalRevTargetDashStyle: darkMode ? 'ShortDash' : 'ShortDash',
+    totalRevDeltaColor0: darkMode ? '#FFBEF0' : '#FF5C39',
+    totalRevDeltaColor1: darkMode ? '#FFBEF0' : '#FF5C39',
+    totalRevDeltaOpacity: darkMode ? 0.7 : 0.6,
+    totalRevDeltaDashStyle: darkMode ? 'ShortDot' : 'ShortDot',
+    newRevColor0: darkMode ? '#CA9A61' : '#CA9A61',
+    newRevColor1: darkMode ? '#CA9A61' : '#CA9A61',
+    newRevOpacity: darkMode ? 0.8 : 0.8,
+    newRevTargetColor0: darkMode ? '#CA9A61' : '#CA9A61',
+    newRevTargetColor1: darkMode ? '#CA9A61' : '#CA9A61',
+    newRevTargetOpacity: darkMode ? 0.5 : 0.5,
+    newRevTargetDashStyle: darkMode ? 'ShortDash' : 'ShortDash',
+    currencySymbol: '$',
+    borderRadius: 12,
+  };
+
   const options = {
     chart: {
       type: 'area',
-      backgroundColor: '#F3F1EE',
-      height: '550px',
-      borderRadius: 8,
+      backgroundColor: colors.plotBackgroundColor,
+      borderRadius: colors.borderRadius,
     },
     title: {
       text: 'Daily Revenue',
+      style: {
+        color: colors.textColor,
+        fontFamily: 'PP Object Sans, sans-serif',
+      },
     },
     legend: {
-      layout: 'horizontal',
+      itemStyle: {
+        color: colors.textColor,
+        fontWeight: 'bold',
+        fontSize: '11px',
+      },
       align: 'center',
       verticalAlign: 'top',
-      x: 0,
-      y: 0,
     },
     xAxis: {
-      categories: metrics.date,
+      categories: metrics.date.map((dateStr) => {
+        const dateObj = new Date(dateStr);
+        return `${dateObj.getMonth() + 1}/${dateObj.getDate()}`; // Format as 'M/D'
+      }),
+      labels: {
+        style: {
+          color: colors.textColor,
+          fontFamily: 'PP Object Sans, sans-serif',
+        },
+      },
     },
-
     yAxis: [
       {
         title: {
           text: 'Revenue',
+          style: {
+            color: colors.textColor,
+            fontFamily: 'PP Object Sans, sans-serif',
+          },
         },
-      },
-      {
-        opposite: true,
-        title: {
-          text: '% Pacing to Target',
+        labels: {
+          formatter: function () {
+            if (this.value >= 1000000) {
+              return (
+                colors.currencySymbol +
+                Highcharts.numberFormat(this.value / 1000000, 0) +
+                'M'
+              );
+            }
+            if (this.value >= 1000) {
+              return (
+                colors.currencySymbol +
+                Highcharts.numberFormat(this.value / 1000, 0) +
+                'k'
+              );
+            }
+            return colors.currencySymbol + this.value;
+          },
+          style: {
+            color: colors.textColor,
+            fontFamily: 'PP Object Sans, sans-serif',
+          },
         },
         min: 0,
+        gridLineColor: colors.tickLineColor,
+        tickColor: colors.tickLineColor,
+      },
+      {
+        title: {
+          text: '',
+          style: {
+            color: colors.textColor,
+            fontFamily: 'PP Object Sans, sans-serif',
+          },
+        },
+        labels: {
+          formatter: function () {
+            if (this.value >= 1000) {
+              return (
+                colors.currencySymbol +
+                Highcharts.numberFormat(this.value / 1000, 0) +
+                'k'
+              );
+            }
+            return colors.currencySymbol + this.value;
+          },
+          style: {
+            color: colors.textColor,
+            fontFamily: 'PP Object Sans, sans-serif',
+          },
+        },
+        min: 0,
+        gridLineColor: colors.tickLineColor,
+        tickColor: colors.tickLineColor,
+        opposite: true,
+        visible: true,
+      },
+      {
+        title: {
+          text: '% Pacing to Target',
+          style: {
+            color: colors.textColor,
+            fontFamily: 'PP Object Sans, sans-serif',
+          },
+        },
+        labels: {
+          formatter: function () {
+            return Highcharts.numberFormat((this.value + 1) * 100, 0) + '%';
+          },
+          style: {
+            color: colors.textColor,
+            fontFamily: 'PP Object Sans, sans-serif',
+          },
+        },
+        min: -1,
+        max: 0.25,
+        gridLineColor: colors.tickLineColor,
+        tickColor: colors.tickLineColor,
+        opposite: true,
+        visible: true,
       },
     ],
+    tooltip: {
+      pointFormatter: function () {
+        if (this.series.name === 'Delta Running Total Revenue') {
+          return (
+            '<span style="color:' +
+            this.series.color +
+            '">' +
+            this.series.name +
+            '</span>: <b>' +
+            ((this.y + 1) * 100).toFixed(0) +
+            '%' +
+            '</b><br/>'
+          );
+        } else {
+          return (
+            '<span style="color:' +
+            this.series.color +
+            '">' +
+            this.series.name +
+            '</span>: <b>' +
+            colors.currencySymbol +
+            Highcharts.numberFormat(Math.round(this.y), 0, '.', ',') +
+            '</b><br/>'
+          );
+        }
+      },
+      style: {
+        color: colors.textColor,
+        fontFamily: 'PP Object Sans, sans-serif',
+      },
+    },
     series: [
       {
         name: 'Actual Revenue (Running)',
+        type: 'area',
+        data: metrics.running_total_actual_total_revenue,
         visible: false,
-        data: metrics.running_total_actual_new_revenue,
-        color: '#2E86C1',
-        type: 'spline',
+        lineWidth: 2.5,
+        opacity: colors.totalRevOpacity,
+        color: {
+          linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+          stops: [
+            [0, colors.totalRevColor0],
+            [1, colors.totalRevColor1],
+          ],
+        },
       },
       {
         name: 'Target Revenue (Running)',
-        visible: false,
-        data: [
-          85000, 75000, 65000, 55000, 45000, 35000, 25000, 15000, 5000, 0, 0, 0,
-          0, 0, 0, 0, 0, 0, 0,
-        ],
-        color: '#F39C12',
         type: 'spline',
+        data: metrics.running_total_target_total_revenue,
+        visible: false,
+        lineWidth: 2.5,
+        opacity: colors.totalRevTargetOpacity,
+        color: {
+          linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+          stops: [
+            [0, colors.totalRevTargetColor0],
+            [1, colors.totalRevTargetColor1],
+          ],
+        },
       },
       {
         name: 'New Revenue (Running)',
+        type: 'area',
         visible: false,
-        data: [
-          10000, 9000, 8000, 7000, 6000, 5000, 4000, 3000, 2000, 1000, 0, 0, 0,
-          0, 0, 0, 0, 0, 0,
-        ],
-        color: '#8E44AD',
+        data: metrics.running_total_actual_new_revenue,
+        lineWidth: 2.5,
+        opacity: colors.newRevOpacity,
+        color: {
+          linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+          stops: [
+            [0, colors.newRevColor0],
+            [1, colors.newRevColor1],
+          ],
+        },
+      },
+      {
+        name: 'Target New Revenue (Running)',
         type: 'spline',
+        visible: false,
+        data: metrics.running_total_target_new_revenue,
+        lineWidth: 2.5,
+        opacity: colors.newRevTargetOpacity,
+        color: {
+          linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+          stops: [
+            [0, colors.newRevTargetColor0],
+            [1, colors.newRevTargetColor1],
+          ],
+        },
       },
       {
         name: 'Spend (Running)',
-        data: [
-          60000, 55000, 50000, 45000, 40000, 35000, 30000, 25000, 20000, 15000,
-          10000, 5000, 0, 0, 0, 0, 0, 0, 0,
-        ],
-        color: '#E74C3C',
-        type: 'spline',
+        type: 'column',
+        visible: false,
+        data: metrics.running_total_actual_spend,
+        yAxis: 1,
+        lineWidth: 2.5,
+        opacity: colors.spendActualOpacity,
+        borderWidth: 0,
+        color: {
+          linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+          stops: [
+            [0, colors.spendActual0],
+            [1, colors.spendActual1],
+          ],
+        },
       },
       {
         name: 'Target Spend (Running)',
-        data: [
-          50000, 45000, 40000, 35000, 30000, 25000, 20000, 15000, 10000, 5000,
-          0, 0, 0, 0, 0, 0, 0, 0, 0,
-        ],
-        color: '#34495E',
-        type: 'spline',
+        type: 'column',
+        visible: false,
+        data: metrics.target_spend,
+        yAxis: 1,
+        lineWidth: 2.5,
+        opacity: colors.spendTargetOpacity,
+        borderWidth: 0,
+        color: {
+          linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+          stops: [
+            [0, colors.spendTarget0],
+            [1, colors.spendTarget1],
+          ],
+        },
       },
       {
         name: 'Actual Revenue (Daily)',
-        data: metrics.actual_total_revenue,
-        color: '#1ABC9C',
         type: 'spline',
+        data: metrics.actual_total_revenue,
+        visible: true,
+        lineWidth: 2.5,
+        opacity: colors.totalRevOpacity,
+        color: {
+          linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+          stops: [
+            [0, colors.totalRevColor0],
+            [1, colors.totalRevColor1],
+          ],
+        },
       },
       {
         name: 'Target Revenue (Daily)',
-        data: metrics.target_total_revenue,
-        color: '#9B59B6',
+        dashStyle: colors.totalRevTargetDashStyle,
         type: 'spline',
+        data: metrics.target_total_revenue,
+        visible: true,
+        lineWidth: 2.5,
+        opacity: colors.totalRevTargetOpacity,
+        color: {
+          linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+          stops: [
+            [0, colors.totalRevTargetColor0],
+            [1, colors.totalRevTargetColor1],
+          ],
+        },
+      },
+      {
+        name: 'New Revenue (Daily)',
+        type: 'spline',
+        visible: false,
+        data: metrics.actual_new_revenue,
+        lineWidth: 2.5,
+        opacity: colors.newRevOpacity,
+        color: {
+          linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+          stops: [
+            [0, colors.newRevColor0],
+            [1, colors.newRevColor1],
+          ],
+        },
+      },
+      {
+        name: 'Target New Revenue (Daily)',
+        dashStyle: colors.newRevTargetDashStyle,
+        type: 'spline',
+        visible: false,
+        data: metrics.target_new_revenue,
+        lineWidth: 2.5,
+        opacity: colors.newRevTargetOpacity,
+        color: {
+          linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+          stops: [
+            [0, colors.newRevTargetColor0],
+            [1, colors.newRevTargetColor1],
+          ],
+        },
       },
       {
         name: 'Delta Running Total Revenue',
-        data: [
-          0.98, 1.01, 1.02, 1.0, 0.99, 1.0, 1.02, 1.03, 1.04, 1.02, 1.02, 1.02,
-          1.01, 1.0, 0.99, 0.98, 0.99, 1.0, 1.1,
-        ],
-        yAxis: 1,
-        color: '#E74C3C',
+        dashStyle: colors.totalRevDeltaDashStyle,
         type: 'spline',
+        visible: true,
+        data: metrics.delta_running_total_revenue_todate,
+        yAxis: 2,
+        lineWidth: 2.5,
+        opacity: colors.totalRevDeltaOpacity,
+        borderWidth: 0,
+        color: {
+          linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+          stops: [
+            [0, colors.totalRevDeltaColor0],
+            [1, colors.totalRevDeltaColor1],
+          ],
+        },
       },
     ],
   };

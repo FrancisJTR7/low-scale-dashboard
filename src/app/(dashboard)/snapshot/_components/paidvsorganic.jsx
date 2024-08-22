@@ -6,8 +6,11 @@ import HighchartsReact from 'highcharts-react-official';
 import useBigQueryData from '../../../hooks/useFetchData';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
+import { format } from 'date-fns';
 
 const Paidvsorganic = () => {
+  const darkMode = useSelector((state) => state.theme.darkMode);
+
   // const queryClient = useQueryClient();
   // const [tableIdentifier, setTableIdentifier] = useState(null);
   // const [userInfo, setUserInfo] = useState(null);
@@ -35,12 +38,15 @@ const Paidvsorganic = () => {
   const options = {
     chart: {
       type: 'pie',
-      backgroundColor: '#F3F1EE',
+      backgroundColor: darkMode ? '#11161D' : '#F3F1EE',
       borderRadius: '12px',
     },
     title: {
       text: 'Paid vs Organic',
       align: 'center',
+      style: {
+        color: darkMode ? '#9FA3A6' : '#000000',
+      },
     },
     legend: {
       layout: 'horizontal',
@@ -48,9 +54,15 @@ const Paidvsorganic = () => {
       verticalAlign: 'top',
       y: 20,
       floating: true,
+      itemStyle: {
+        color: darkMode ? '#9FA3A6' : '#000000',
+      },
     },
     tooltip: {
       pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>',
+      style: {
+        color: darkMode ? '#9FA3A6' : '#000000',
+      },
     },
     accessibility: {
       point: {
@@ -94,15 +106,24 @@ const Paidvsorganic = () => {
       <div>
         <div>
           <h1>Selected Date Range:</h1>
-          <p>Start Date: {startDate ? startDate.toString() : 'None'}</p>
-          <p>End Date: {endDate ? endDate.toString() : 'None'}</p>
+          <p>
+            {' '}
+            Start Date:{' '}
+            {startDate
+              ? format(new Date(startDate), 'MMM dd, yyyy HH:mm')
+              : 'None'}
+          </p>
+          <p>
+            End Date:{' '}
+            {endDate ? format(new Date(endDate), 'MMM dd, yyyy HH:mm') : 'None'}
+          </p>
         </div>
-        <h1>Selected Company ID: {selectedTableIdentifier}</h1>
-        {/* <h1>BigQuery Data</h1>
+        {/* <h1>Selected Company ID: {selectedTableIdentifier}</h1>
+        <h1>BigQuery Data</h1>
         <h1>User Information</h1>
         <p>Username: {userInfo.email}</p>
-        <p>Company: {companyInfo.id}</p> */}
-        <pre>{JSON.stringify(data, null, 2)}</pre>
+        <p>Company: {companyInfo.id}</p>
+        <pre>{JSON.stringify(data, null, 2)}</pre> */}
       </div>
     </div>
   );

@@ -64,9 +64,7 @@ const Layout = async ({ children }) => {
         <Sidebar />
       </div>
       <Topbar {...data} />
-      <div className='w-[95%] max-xl:w-full overflow-x-hidden pl-2'>
-        {children}
-      </div>
+      <div className='w-[95%] max-xl:w-full overflow-x-hidden '>{children}</div>
     </div>
   );
 };

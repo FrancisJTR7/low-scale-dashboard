@@ -34,9 +34,11 @@ const Kpi = () => {
     (state) => state.company.selectedTableIdentifier
   );
 
-  const { data } = useBigQueryData(selectedTableIdentifier);
+  const darkMode = useSelector((state) => state.theme.darkMode);
 
-  if (!selectedTableIdentifier) {
+  const { data } = useBigQueryData(selectedTableIdentifier, 'kpi');
+
+  if (!data) {
     return <div>Loading...</div>;
   }
 
@@ -103,20 +105,23 @@ const Kpi = () => {
   };
 
   return (
-    <div className='space-y-2.5  max-w-[15rem]  max-md:w-full flex flex-wrap items-center justify-between max-md:space-y-0 max-md:gap-y-4'>
+    <div className='space-y-2.5  w-[15rem]  max-md:w-full flex flex-wrap items-center justify-between max-md:space-y-0 max-md:gap-y-4'>
       {kpiItems.map((item, index) => (
         <div
           key={index}
-          className='text-center p-4 bg-[#F3F1EE] rounded-xl max-md:w-[32%] max-sm:w-[48.5%] w-full'
+          className={clsx(
+            'text-center p-4 bg-[#F3F1EE] rounded-xl max-md:w-[32%] max-sm:w-[48.5%] w-full',
+            darkMode && 'bg-bluestone text-white'
+          )}
         >
-          <div className='text-[.8rem] font-bold text-black'>{item.title}</div>
+          <div className='text-[.8rem] font-bold '>{item.title}</div>
           <div className='flex justify-center items-center gap-2'>
-            <div className='text-2xl font-extrabold text-black'>
+            <div className='text-2xl font-extrabold '>
               {formatNumber(item.value)}
             </div>
             <div
               className={clsx(
-                'flex items-center px-1 h-5 font-extrabold rounded-[4px] text-xs',
+                'flex items-center px-1 h-5 font-black rounded-[4px] text-xs',
                 {
                   'text-green-500 bg-green-200':
                     getMetricColor(item.change, item.positive) === 'positive',

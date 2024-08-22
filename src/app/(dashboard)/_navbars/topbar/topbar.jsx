@@ -5,8 +5,11 @@ import { RiCloseLine, RiMenu4Fill } from 'react-icons/ri';
 import Image from 'next/image';
 import Sidebar from '../sidebar/sidebar';
 import { useQueryClient } from '@tanstack/react-query';
+import { useSelector } from 'react-redux';
+import clsx from 'clsx';
 
 const Topbar = ({ userInfo, companyInfo, portfolioList, tableIdentifier }) => {
+  const darkMode = useSelector((state) => state.theme.darkMode);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -25,14 +28,26 @@ const Topbar = ({ userInfo, companyInfo, portfolioList, tableIdentifier }) => {
   };
 
   return (
-    <div className='h-14 hidden max-xl:flex bg-gradient-to-t'>
-      <div className='fixed top-0 left-0 right-0 mx-0 z-10 h-[5rem] pt-2 px-24 max-md:px-12 backdrop-blur-[7px] bg-[#cec8bb]/85 '>
+    <div
+      className={clsx(
+        'h-14 hidden max-xl:flex bg-beige',
+        darkMode && 'bg-stone text-orcgray'
+      )}
+    >
+      <div
+        className={clsx(
+          'fixed top-0 left-0 right-0 mx-0 z-10 h-[5rem] pt-2 px-24 max-md:px-12 backdrop-blur-[7px] bg-beige/85 ',
+          darkMode && 'bg-stone/85 '
+        )}
+      >
         <div className='flex justify-between items-center mt-2'>
           <RiMenu4Fill
             onMouseDown={handleClick}
             size={32}
-            color='black'
-            className='cursor-pointer'
+            className={clsx(
+              'cursor-pointer text-black',
+              darkMode && 'text-white '
+            )}
           />
           {/* Sidebar component */}
           {showElement && (
@@ -59,7 +74,19 @@ const Topbar = ({ userInfo, companyInfo, portfolioList, tableIdentifier }) => {
             height='60'
             className='absolute top-3 left-0 right-0 mx-auto'
           />
-          <div>francis</div>
+          <div>
+            <div className='flex items-center cursor-pointer'>
+              <div className='rounded-full w-12 h-12 text-center flex items-center justify-center bg-green-200 text-green-800 font-bold text-lg'>
+                FT
+              </div>
+              <div className='pl-3'>
+                <div className={clsx('font-bold', darkMode && 'text-white')}>
+                  {userInfo?.first_name} {userInfo?.last_name}
+                </div>
+                <div className='font-[400]'>{userInfo?.email}</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -5,15 +5,16 @@ export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const tableIdentifier = searchParams.get('tableIdentifier');
+    const queryType = searchParams.get('queryType');
 
-    if (!tableIdentifier) {
+    if (!tableIdentifier || !queryType) {
       return NextResponse.json(
-        { error: 'Missing tableIdentifier' },
+        { error: 'Missing tableIdentifier or queryType' },
         { status: 400 }
       );
     }
 
-    const data = await fetchData(tableIdentifier);
+    const data = await fetchData(tableIdentifier, queryType);
 
     // Convert Big objects to string if needed
     const formattedData = data.map((item) => {

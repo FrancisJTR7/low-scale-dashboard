@@ -27,8 +27,13 @@ const Dropdown = () => {
           const companies = portfolioCompanies.flatMap((pc) => pc.companies);
 
           if (companies.length > 0) {
-            const initialTableIdentifier = companies[0].table_identifier;
-            dispatch(selectCompany(initialTableIdentifier));
+            const initialCompany = companies[0];
+            dispatch(
+              selectCompany({
+                tableIdentifier: initialCompany.table_identifier,
+                companyName: initialCompany.company_name,
+              })
+            );
           }
         }
       }
@@ -52,8 +57,13 @@ const Dropdown = () => {
           const companies = portfolioCompanies.flatMap((pc) => pc.companies);
 
           if (companies.length > 0) {
-            const initialTableIdentifier = companies[0].table_identifier;
-            dispatch(selectCompany(initialTableIdentifier));
+            const initialCompany = companies[0];
+            dispatch(
+              selectCompany({
+                tableIdentifier: initialCompany.table_identifier,
+                companyName: initialCompany.company_name,
+              })
+            );
           }
         }
       }
@@ -80,12 +90,23 @@ const Dropdown = () => {
 
   const handleCompanyChange = (event) => {
     const selectedTableIdentifier = event.target.value;
-    dispatch(selectCompany(selectedTableIdentifier));
+    const selectedCompany = companies.find(
+      (company) => company.table_identifier === selectedTableIdentifier
+    );
+
+    if (selectedCompany) {
+      dispatch(
+        selectCompany({
+          tableIdentifier: selectedTableIdentifier,
+          companyName: selectedCompany.company_name,
+        })
+      );
+    }
   };
 
   return (
-    <div className='text-black'>
-      <select onChange={handleCompanyChange}>
+    <div className='text-black mt-4'>
+      <select className='w-[16.5rem]' onChange={handleCompanyChange}>
         {companies.map((company) => (
           <option key={company.id} value={company.table_identifier}>
             {company.company_name}

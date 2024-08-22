@@ -10,6 +10,8 @@ import {
   MdOutlineSettings,
   MdHelpCenter,
 } from 'react-icons/md';
+import { useSelector } from 'react-redux';
+import clsx from 'clsx';
 
 const menuItems = [
   {
@@ -75,6 +77,8 @@ const menuItems = [
 ];
 
 const MenuToggle = () => {
+  const DarkMode = useSelector((state) => state.theme.darkMode);
+
   const [openMenus, setOpenMenus] = useState({});
 
   const toggleMenu = (title) => {
@@ -90,7 +94,10 @@ const MenuToggle = () => {
         <li key={cat.title}>
           {cat.title && (
             <div
-              className='flex justify-between items-center p-[10px] my-[5px] italic cursor-pointer hover:bg-[#BAB5A9] rounded-[5px] text-black text-[13px]'
+              className={clsx(
+                'flex justify-between items-center p-[10px] my-[5px] italic cursor-pointer hover:bg-[#BAB5A9] rounded-[5px]  text-[14px]',
+                DarkMode && 'hover:bg-bluestone'
+              )}
               onClick={() => toggleMenu(cat.title)}
             >
               {cat.title}

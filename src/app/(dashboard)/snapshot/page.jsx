@@ -8,10 +8,18 @@ import SessionsVsCVRChart from './_components/sessionscvr';
 import { DatePickerWithRange } from './_components/daterange';
 import ProjectedRevenue from './_components/projectedrevenue';
 import Link from 'next/link';
+import clsx from 'clsx';
+import { useSelector } from 'react-redux';
 
 export default function Snapshot() {
+  const darkMode = useSelector((state) => state.theme.darkMode);
   return (
-    <div className='flex flex-col gap-[20px] pt-[30px] h-full w-full pr-4 max-xl:px-4'>
+    <div
+      className={clsx(
+        'flex flex-col gap-[20px] pt-[30px] h-full w-full pr-4 pl-2 max-xl:px-4',
+        darkMode && 'bg-stone text-white'
+      )}
+    >
       <div className='flex mb-[-10px] justify-between items-center w-full max-sm:flex-col max-sm:gap-y-3 max-sm:mb-[2px]'>
         <ProjectedRevenue />
         <DatePickerWithRange />
