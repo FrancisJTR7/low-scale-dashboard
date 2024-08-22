@@ -1,9 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { startOfMonth, subDays } from 'date-fns';
+import { startOfMonth, subDays, format } from 'date-fns';
 
 const initialState = {
-  startDate: startOfMonth(new Date()),
-  endDate: subDays(new Date(), 1),
+  startDate: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
+  endDate: format(subDays(new Date(), 1), 'yyyy-MM-dd'),
 };
 
 const selectedDatesSlice = createSlice({
@@ -11,8 +11,8 @@ const selectedDatesSlice = createSlice({
   initialState,
   reducers: {
     setSelectedDates: (state, action) => {
-      state.startDate = action.payload.startDate;
-      state.endDate = action.payload.endDate;
+      state.startDate = format(action.payload.startDate, 'yyyy-MM-dd');
+      state.endDate = format(action.payload.endDate, 'yyyy-MM-dd');
     },
   },
 });

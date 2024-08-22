@@ -1,6 +1,6 @@
 const bigquery = require('./client');
 
-async function fetchData(tableIdentifier, queryType) {
+async function fetchData(tableIdentifier, queryType, startDate, endDate) {
   let query;
 
   switch (queryType) {
@@ -10,23 +10,23 @@ async function fetchData(tableIdentifier, queryType) {
     FORMAT_DATE('%Y-%m', PARSE_DATE('%m/%d/%Y', t.day)) AS month
   , PARSE_DATE('%m/%d/%Y', t.day) AS date
     , CASE
-        WHEN DATE('2024-08-12') < PARSE_DATE('%m/%d/%Y', t.day) THEN NULL
+        WHEN DATE('${endDate}') < PARSE_DATE('%m/%d/%Y', t.day) THEN NULL
         ELSE p.total_spend
       END AS total_spend
     , CASE
-        WHEN DATE('2024-08-12') < PARSE_DATE('%m/%d/%Y', t.day) THEN NULL
+        WHEN DATE('${endDate}') < PARSE_DATE('%m/%d/%Y', t.day) THEN NULL
         ELSE p.new_orders
       END AS new_orders
     , CASE
-        WHEN DATE('2024-08-12') < PARSE_DATE('%m/%d/%Y', t.day) THEN NULL
+        WHEN DATE('${endDate}') < PARSE_DATE('%m/%d/%Y', t.day) THEN NULL
         ELSE p.new_revenue
       END AS new_revenue
     , CASE
-        WHEN DATE('2024-08-12') < PARSE_DATE('%m/%d/%Y', t.day) THEN NULL
+        WHEN DATE('${endDate}') < PARSE_DATE('%m/%d/%Y', t.day) THEN NULL
         ELSE p.return_orders
       END AS return_orders
     , CASE
-        WHEN DATE('2024-08-12') < PARSE_DATE('%m/%d/%Y', t.day) THEN NULL
+        WHEN DATE('${endDate}') < PARSE_DATE('%m/%d/%Y', t.day) THEN NULL
         ELSE p.return_revenue
       END AS return_revenue
     , CAST(t.spend AS NUMERIC) AS target_spend
@@ -40,8 +40,8 @@ async function fetchData(tableIdentifier, queryType) {
     \`orcaanalytics.analytics.pacing__${tableIdentifier}\` p 
     ON PARSE_DATE('%m/%d/%Y', t.day) = DATE(p.date)
   WHERE
-    PARSE_DATE('%m/%d/%Y', t.day) >= DATE('2024-08-01')
-    AND FORMAT_DATE('%Y-%m', PARSE_DATE('%m/%d/%Y', t.day)) <= FORMAT_DATE('%Y-%m', DATE('2024-08-12'))
+    PARSE_DATE('%m/%d/%Y', t.day) >= DATE('${startDate}')
+    AND FORMAT_DATE('%Y-%m', PARSE_DATE('%m/%d/%Y', t.day)) <= FORMAT_DATE('%Y-%m', DATE('${endDate}'))
 )
 , dailypacing AS (
   SELECT
@@ -159,31 +159,31 @@ SELECT
   , target_total_orders
   , target_total_revenue
   , case 
-      when DATE('2024-08-12') < date then null 
+      when DATE('${endDate}') < date then null 
       else running_total_actual_spend 
 	  end as running_total_actual_spend
   , case 
-      when DATE('2024-08-12') < date then null 
+      when DATE('${endDate}') < date then null 
       else running_total_actual_new_orders 
 	  end as running_total_actual_new_orders
   , case 
-      when DATE('2024-08-12') < date then null 
+      when DATE('${endDate}') < date then null 
       else running_total_actual_new_revenue 
 	  end as running_total_actual_new_revenue
   , case 
-      when DATE('2024-08-12') < date then null 
+      when DATE('${endDate}') < date then null 
       else running_total_actual_return_orders 
 	  end as running_total_actual_return_orders
   , case 
-      when DATE('2024-08-12') < date then null 
+      when DATE('${endDate}') < date then null 
       else running_total_actual_return_revenue 
 	  end as running_total_actual_return_revenue
   , case 
-      when DATE('2024-08-12') < date then null 
+      when DATE('${endDate}') < date then null 
       else running_total_actual_total_orders 
 	  end as running_total_actual_total_orders
   , case 
-      when DATE('2024-08-12') < date then null 
+      when DATE('${endDate}') < date then null 
       else running_total_actual_total_revenue 
 	  end as running_total_actual_total_revenue
   , running_total_target_spend
@@ -217,7 +217,7 @@ SELECT
       else (running_total_actual_total_revenue - running_total_target_total_revenue) / running_total_target_total_revenue 
       end as delta_running_total_revenue
   , case 
-	  when DATE('2024-08-12') < date then -1 
+	  when DATE('${endDate}') < date then -1 
 	  when running_total_target_total_revenue = 0 then 0
       else (running_total_actual_total_revenue - running_total_target_total_revenue) / running_total_target_total_revenue 
       end as delta_running_total_revenue_todate

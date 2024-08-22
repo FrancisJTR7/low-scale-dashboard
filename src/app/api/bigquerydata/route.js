@@ -6,15 +6,22 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const tableIdentifier = searchParams.get('tableIdentifier');
     const queryType = searchParams.get('queryType');
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
 
-    if (!tableIdentifier || !queryType) {
+    if (!tableIdentifier || !queryType || !startDate || !endDate) {
       return NextResponse.json(
-        { error: 'Missing tableIdentifier or queryType' },
+        { error: 'Missing tableIdentifier, queryType, startDate, or endDate' },
         { status: 400 }
       );
     }
 
-    const data = await fetchData(tableIdentifier, queryType);
+    const data = await fetchData(
+      tableIdentifier,
+      queryType,
+      startDate,
+      endDate
+    );
 
     // Convert Big objects to string if needed
     const formattedData = data.map((item) => {

@@ -106,17 +106,8 @@ const Paidvsorganic = () => {
       <div>
         <div>
           <h1>Selected Date Range:</h1>
-          <p>
-            {' '}
-            Start Date:{' '}
-            {startDate
-              ? format(new Date(startDate), 'MMM dd, yyyy HH:mm')
-              : 'None'}
-          </p>
-          <p>
-            End Date:{' '}
-            {endDate ? format(new Date(endDate), 'MMM dd, yyyy HH:mm') : 'None'}
-          </p>
+          <p> Start Date: {startDate}</p>
+          <p>End Date: {endDate}</p>
         </div>
         {/* <h1>Selected Company ID: {selectedTableIdentifier}</h1>
         <h1>BigQuery Data</h1>

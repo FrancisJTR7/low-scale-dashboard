@@ -13,10 +13,13 @@ const DailyRevenue = () => {
   const selectedTableIdentifier = useSelector(
     (state) => state.company.selectedTableIdentifier
   );
+  const { startDate, endDate } = useSelector((state) => state.selectedDates);
 
   const { data, isLoading, error } = useBigQueryData(
     selectedTableIdentifier,
-    'dailyRevenue'
+    'dailyRevenue',
+    startDate,
+    endDate
   );
 
   if (isLoading) {
@@ -119,7 +122,7 @@ const DailyRevenue = () => {
     },
     xAxis: {
       categories: metrics.date.map((dateStr) => {
-        const dateObj = new Date(dateStr);
+        const dateObj = new Date(`${dateStr}T00:00:00`); // Assume the date is in local time and add time to prevent timezone issues
         return `${dateObj.getMonth() + 1}/${dateObj.getDate()}`; // Format as 'M/D'
       }),
       labels: {

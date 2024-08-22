@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { format } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDates } from '../../../../state/selectedDatesSlice'; // Adjust the path as needed
@@ -14,23 +14,9 @@ export function DatePickerWithRange({ className }) {
   const { startDate, endDate } = useSelector((state) => state.selectedDates);
 
   const [date, setDate] = React.useState({
-    from: startDate,
-    to: endDate,
+    from: addDays(new Date(startDate), 1),
+    to: addDays(new Date(endDate), 1),
   });
-
-  React.useEffect(() => {
-    if (!startDate || !endDate) {
-      const initialStartDate = date.from || startDate;
-      const initialEndDate = date.to || endDate;
-      dispatch(
-        setSelectedDates({
-          startDate: initialStartDate,
-          endDate: initialEndDate,
-        })
-      );
-      setDate({ from: initialStartDate, to: initialEndDate });
-    }
-  }, [dispatch, startDate, endDate, date.from, date.to]);
 
   const handleSelect = (range) => {
     if (range?.from && range?.to) {
