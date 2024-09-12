@@ -615,17 +615,113 @@ ORDER BY
       break;
     case 'sessionsVsCvr':
       query = `select
-  *
-  , case 
-      when sessions = 0 then 0
-      when sessions is null then 0
-      else new_orders / sessions 
-    end as new_cvr
-from
-  
-where
-  -- DATE between now() - interval '15 day' and now() - interval '1 day'
-  date >= '${startDate}' and date <= '${endate}'`;
+        *
+        , case 
+            when sessions = 0 then 0
+            when sessions is null then 0
+            else new_orders / sessions 
+          end as new_cvr
+      from
+        
+      where
+        -- DATE between now() - interval '15 day' and now() - interval '1 day'
+        date >= '${startDate}' and date <= '${endDate}'`;
+            break;
+      case 'dailyBiz':
+        query = `
+        with base as (
+          select
+            date
+            , sum(meta_spend) as meta_spend
+            , sum(google_spend) as google_spend
+            , sum(tiktok_spend) as tiktok_spend
+            , sum(bing_spend) as bing_spend
+            , sum(pinterest_spend) as pinterest_spend
+            , sum(other_spend1) as other_spend1
+            , sum(other_spend2) as other_spend2
+            , sum(total_spend) as total_spend
+            , sum(total_orders) as total_orders
+            , sum(new_orders) as new_orders
+            , sum(return_orders) as return_orders
+            , sum(total_revenue) as total_revenue
+            , sum(new_revenue) as new_revenue
+            , sum(return_revenue) as return_revenue
+            , sum(sessions) as sessions
+          from \`orcaanalytics.analytics.pacing__${tableIdentifier}\`
+          group by 1
+          )
+          select 
+            date 
+            , round(cast(total_spend as numeric),2) as total_spend
+              , meta_spend
+              , google_spend
+              , tiktok_spend
+              , bing_spend
+              , pinterest_spend
+              , other_spend1
+              , other_spend2
+            , total_orders
+            , new_orders
+            , return_orders
+            , total_revenue
+            , new_revenue
+              , case 
+                  when new_orders = 0 then 0 
+                  else new_revenue / new_orders 
+                  end as new_aov
+              , case 
+                  when total_orders = 0 then 0 
+                  else total_revenue / total_orders 
+                  end as total_aov
+            , return_revenue
+              , sessions
+            , case 
+                  when sessions = 0 then 0 
+                  else total_orders / sessions 
+                  end as cvr
+              , case 
+                  when sessions = 0 then 0 
+                  else new_orders / sessions 
+                  end as newcvr 
+            , case 
+                  when new_orders = 0 then 0
+                  else total_spend / new_orders
+                  end as cac 
+            , case 
+              when sum(new_orders) over (order by date rows between 6 preceding and current row) = 0 then 0
+              else round(cast((sum(total_spend) over (order by date rows between 6 preceding and current row)) / (sum(new_orders) over (order by date rows between 6 preceding and current row))as numeric),2)
+              end as cac_7d_avg
+            , case 
+                  when total_spend = 0 then 0
+                  else new_revenue / total_spend
+                  end as roas 
+            , case 
+              when sum(total_spend) over (order by date rows between 6 preceding and current row) = 0 then 0
+              else round(cast((sum(new_revenue) over (order by date rows between 6 preceding and current row)) / (sum(total_spend) over (order by date rows between 6 preceding and current row)) as numeric),2) 
+              end as roas_7d_avg
+            , case 
+                  when total_orders = 0 then 0
+                  else total_spend / total_orders
+                  end as cpo
+            , case 
+              when sum(total_orders) over (order by date rows between 6 preceding and current row) = 0 then 0
+              else round(cast((sum(total_spend) over (order by date rows between 6 preceding and current row)) / (sum(total_orders) over (order by date rows between 6 preceding and current row)) as numeric),2)
+              end as cpo_7d_avg
+            , case
+              when total_spend = 0 then 0
+              else round(cast((total_revenue / total_spend) as numeric),2)
+              end as broas
+              , case
+              when total_revenue = 0 then 0
+              else round(cast((total_spend / total_revenue) as numeric),2)
+              end as mer
+            , case 
+              when sum(total_spend) over (order by date rows between 6 preceding and current row) = 0 then 0
+              else round(cast((sum(total_revenue) over (order by date rows between 6 preceding and current row)) / (sum(total_spend) over (order by date rows between 6 preceding and current row)) as numeric),2) 
+              end as broas_7d_avg
+          from base 
+          order by 1  
+      `;
       break;
     default:
       throw new Error(`Unknown query type: ${queryType}`);

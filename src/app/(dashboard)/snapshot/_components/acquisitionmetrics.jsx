@@ -3,9 +3,81 @@
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { useSelector } from 'react-redux';
+import useBigQueryData from '../../../hooks/useFetchData';
 
 const AcquisitionMetricsChart = () => {
   const darkMode = useSelector((state) => state.theme.darkMode);
+  const selectedTableIdentifier = useSelector(
+    (state) => state.company.selectedTableIdentifier
+  );
+  const { startDate, endDate } = useSelector((state) => state.selectedDates);
+
+  const { data, isLoading, error } = useBigQueryData(
+    selectedTableIdentifier,
+    'dailyBiz'
+  );
+
+// Helper function to safely format numbers with specified decimal places
+const formatNumber = (value, decimalPlaces) => {
+  const num = parseFloat(value);
+  return isNaN(num) ? value : num.toFixed(decimalPlaces);
+};
+
+// Ensure data and data.date exist before processing
+if (data && data.date) {
+  // Filter and transform data
+  const filteredData = data.date.value.reduce((acc, date, index) => {
+    const currentDate = new Date(date);
+    if (currentDate >= startDate && currentDate <= endDate) {
+      acc.date.push(date);
+      acc.cpo.push(formatNumber(data.cpo[index], 2));
+      acc.cac.push(formatNumber(data.cac[index], 2));
+      acc.roas.push(formatNumber(data.roas[index], 2));
+      acc.new_orders.push(data.new_orders[index].toString());
+      acc.total_spend.push(formatNumber(data.total_spend[index], 2));
+      acc.broas.push(formatNumber(data.broas[index], 2));
+      acc.sessions.push(formatNumber(data.sessions[index], 0));
+      acc.cvr.push(formatNumber(data.cvr[index], 4));
+      acc.newcvr.push(formatNumber(data.newcvr[index], 4));
+    }
+    return acc;
+  }, {
+    date: [],
+    cpo: [],
+    cac: [],
+    roas: [],
+    new_orders: [],
+    total_spend: [],
+    broas: [],
+    sessions: [],
+    cvr: [],
+    newcvr: []
+  });
+  // Sort the data in descending order by date
+  const sortedIndices = filteredData.date
+    .map((date, index) => ({ date, index }))
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .map(item => item.index);
+  // Apply sorting to all arrays
+  for (const key in filteredData) {
+    filteredData[key] = sortedIndices.map(i => filteredData[key][i]);
+  }
+  return filteredData;
+} else {
+  console.error("Data or data.date is undefined.");
+  return {
+    date: [],
+    cpo: [],
+    cac: [],
+    roas: [],
+    new_orders: [],
+    total_spend: [],
+    broas: [],
+    sessions: [],
+    cvr: [],
+    newcvr: []
+  };
+}
 
   const options = {
     chart: {
@@ -31,23 +103,7 @@ const AcquisitionMetricsChart = () => {
       },
     },
     xAxis: {
-      categories: [
-        '5/22',
-        '5/23',
-        '5/24',
-        '5/25',
-        '5/26',
-        '5/27',
-        '5/28',
-        '5/29',
-        '5/30',
-        '5/31',
-        '6/1',
-        '6/2',
-        '6/3',
-        '6/4',
-        '6/5',
-      ],
+      categories: ['1/1'], //filteredData.Date,
       labels: {
         style: {
           color: darkMode ? '#9FA3A6' : '#000000', // X-axis labels color
@@ -127,24 +183,21 @@ const AcquisitionMetricsChart = () => {
       {
         name: 'Spend',
         type: 'column',
-        data: [20, 22, 24, 26, 28, 30, 22, 24, 26, 28, 30, 22, 24, 26, 28],
+        data: [20], //filteredData.total_spend,
         color: '#D4A15A',
         yAxis: 0,
       },
       {
         name: 'New Customers',
         type: 'line',
-        data: [
-          150, 160, 170, 180, 190, 200, 160, 170, 180, 190, 200, 160, 170, 180,
-          190,
-        ],
+        data: [10], //filteredData.new_orders,
         color: '#AF7AC5',
         yAxis: 1,
       },
       {
         name: 'CAC',
         type: 'line',
-        data: [40, 42, 44, 46, 48, 50, 42, 44, 46, 48, 50, 42, 44, 46, 48],
+        data: [15], //filteredData.cac,
         color: '#E74C3C',
         yAxis: 2,
       },
