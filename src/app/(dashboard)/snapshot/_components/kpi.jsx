@@ -36,14 +36,25 @@ const Kpi = () => {
 
   const darkMode = useSelector((state) => state.theme.darkMode);
 
-  const { data } = useBigQueryData(selectedTableIdentifier, 'kpi');
+  const { data, isLoading } = useBigQueryData(selectedTableIdentifier, 'kpi');
 
-  if (!data) {
-    return <div>Loading...</div>;
-  }
-
+  // Handle loading state by returning a placeholder or empty data
   const kpiItems =
-    data && data.length > 0
+    isLoading || !data
+      ? [
+          { title: 'Spend', value: null, change: null, positive: true },
+          { title: 'New Revenue', value: null, change: null, positive: true },
+          { title: 'CAC', value: null, change: null, positive: false },
+          {
+            title: 'Return Revenue',
+            value: null,
+            change: null,
+            positive: true,
+          },
+          { title: 'Total Revenue', value: null, change: null, positive: true },
+          { title: 'bROAS', value: null, change: null, positive: true },
+        ]
+      : data && data.length > 0
       ? [
           {
             title: 'Spend',
@@ -78,7 +89,7 @@ const Kpi = () => {
           {
             title: 'bROAS',
             value: data[0].aggregate_actual_broas,
-            change: data[0].delta_aggregate_broas8,
+            change: data[0].delta_aggregate_broas,
             positive: true,
           },
         ]
@@ -105,7 +116,14 @@ const Kpi = () => {
   };
 
   return (
-    <div className='space-y-2.5  w-[15rem]  max-md:w-full flex flex-wrap items-center justify-between max-md:space-y-0 max-md:gap-y-4'>
+    <div
+      className={clsx(
+        'space-y-2.5 w-[15rem] max-md:w-full flex flex-wrap items-center justify-between max-md:space-y-0 max-md:gap-y-4',
+        {
+          'opacity-50 grayscale pointer-events-none': isLoading || !data,
+        }
+      )}
+    >
       {kpiItems.map((item, index) => (
         <div
           key={index}
@@ -117,7 +135,7 @@ const Kpi = () => {
           <div className='text-[.8rem] font-bold '>{item.title}</div>
           <div className='flex justify-center items-center gap-2'>
             <div className='text-2xl font-extrabold '>
-              {formatNumber(item.value)}
+              {item.value !== null ? formatNumber(item.value) : '...'}
             </div>
             <div
               className={clsx(
@@ -132,8 +150,14 @@ const Kpi = () => {
                 }
               )}
             >
-              {item.change >= 0 ? <FaCaretUp /> : <FaCaretDown />}
-              {formatChange(item.change)}
+              {item.change !== null ? (
+                <>
+                  {item.change >= 0 ? <FaCaretUp /> : <FaCaretDown />}
+                  {formatChange(item.change)}
+                </>
+              ) : (
+                '...'
+              )}
             </div>
           </div>
         </div>

@@ -27,7 +27,7 @@ const LogInBox = ({ className, ...props }) => {
   }
 
   return (
-    <div className='lg:px-8 bg-white w-[20%] flex justify-center rounded-r-[2rem] relative'>
+    <div className='px-8 bg-white w-[32rem] flex justify-center rounded-r-[2rem] relative z-[12] '>
       <div className='w-[50px] h-[50px] absolute right-0 bottom-0 bg-[#515874] z-0 ' />
       <div className='w-[50px] h-[50px] absolute right-0 bottom-0 bg-white z-1 rounded-br-[2rem]' />
       <div className='h-[100vh]  min-w-[100%] flex  flex-col justify-center space-y-6 sm:w-[350px]'>

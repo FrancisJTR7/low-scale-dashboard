@@ -32,6 +32,7 @@ const Dropdown = () => {
               selectCompany({
                 tableIdentifier: initialCompany.table_identifier,
                 companyName: initialCompany.company_name,
+                hdyhau: initialCompany.hdyhau, // Add hdyhau here
               })
             );
           }
@@ -62,6 +63,7 @@ const Dropdown = () => {
               selectCompany({
                 tableIdentifier: initialCompany.table_identifier,
                 companyName: initialCompany.company_name,
+                hdyhau: initialCompany.hdyhau, // Add hdyhau here
               })
             );
           }
@@ -99,6 +101,7 @@ const Dropdown = () => {
         selectCompany({
           tableIdentifier: selectedTableIdentifier,
           companyName: selectedCompany.company_name,
+          hdyhau: selectedCompany.hdyhau, // Add hdyhau here
         })
       );
     }

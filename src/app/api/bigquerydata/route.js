@@ -8,6 +8,7 @@ export async function GET(req) {
     const queryType = searchParams.get('queryType');
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
+    const hdyhau = searchParams.get('hdyhau');
 
     if (!tableIdentifier || !queryType || !startDate || !endDate) {
       return NextResponse.json(
@@ -20,7 +21,8 @@ export async function GET(req) {
       tableIdentifier,
       queryType,
       startDate,
-      endDate
+      endDate,
+      hdyhau
     );
 
     // Convert Big objects to string if needed

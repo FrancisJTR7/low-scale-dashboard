@@ -31,7 +31,7 @@ const Sidebar = () => {
             src='/orcaLogo.png'
             alt='profile'
             width='80'
-            height='80'
+            height='23'
             className=''
           />
           <h1

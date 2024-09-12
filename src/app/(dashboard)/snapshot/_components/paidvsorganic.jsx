@@ -1,121 +1,140 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import useBigQueryData from '../../../hooks/useFetchData';
-import { useQueryClient } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
-import { format } from 'date-fns';
+import { useQueryClient } from '@tanstack/react-query';
+import useBigQueryData from '../../../hooks/useFetchData';
+import clsx from 'clsx';
 
 const Paidvsorganic = () => {
   const darkMode = useSelector((state) => state.theme.darkMode);
-
-  // const queryClient = useQueryClient();
-  // const [tableIdentifier, setTableIdentifier] = useState(null);
-  // const [userInfo, setUserInfo] = useState(null);
-  // const [companyInfo, setCompanyInfo] = useState(null);
   const selectedTableIdentifier = useSelector(
     (state) => state.company.selectedTableIdentifier
   );
 
+  const hdyhau = useSelector((state) => state.company.hdyhau?.toLowerCase());
+
   const { startDate, endDate } = useSelector((state) => state.selectedDates);
-  // useEffect(() => {
-  //   const cachedData = queryClient.getQueryData('userData');
-  //   if (cachedData) {
-  //     setTableIdentifier(cachedData.tableIdentifier);
-  //     setUserInfo(cachedData.userInfo);
-  //     setCompanyInfo(cachedData.companyInfo);
-  //   }
-  // }, [queryClient]);
 
-  const { data } = useBigQueryData(selectedTableIdentifier);
+  // Pass hdyhau as an argument when calling the useBigQueryData hook
+  const { data, isLoading } = useBigQueryData(
+    selectedTableIdentifier,
+    'paidVsOrganic',
+    startDate,
+    endDate,
+    hdyhau
+  );
 
-  if (!selectedTableIdentifier) {
-    return <div>Loading...</div>;
-  }
+  // Categorize the responses as "Paid" or "Organic"-
+  const categorizeResponse = (response) => {
+    const lowerResponse = response.toLowerCase();
+    if (
+      lowerResponse.includes('facebook') ||
+      lowerResponse.includes('instagram') ||
+      lowerResponse.includes('google') ||
+      lowerResponse.includes('youtube') ||
+      lowerResponse.includes('paid')
+    ) {
+      return 'Paid';
+    }
+    return 'Organic';
+  };
+
+  const totalCounts =
+    isLoading || !data
+      ? { Paid: 0, Organic: 0 } // No data during loading
+      : data.reduce(
+          (acc, item) => {
+            const category = categorizeResponse(item.response);
+            acc[category] = (acc[category] || 0) + (parseInt(item.count) || 0);
+            return acc;
+          },
+          { Paid: 0, Organic: 0 }
+        );
+
+  const totalResponses = totalCounts.Paid + totalCounts.Organic;
+
+  // Calculate the percentage for each category
+  const pieData = [
+    {
+      name: 'Paid',
+      y: (totalCounts.Paid / totalResponses) * 100 || 0,
+      color: darkMode ? '#b1e4e3' : '#CA9A61', // Solid Paid color
+    },
+    {
+      name: 'Organic',
+      y: (totalCounts.Organic / totalResponses) * 100 || 0,
+      color: darkMode ? '#ffb7ae' : '#196E64', // Solid Organic color
+    },
+  ];
+
+  const colors = {
+    textColor: darkMode ? '#9FA3A6' : '#000000',
+    plotBackgroundColor: darkMode ? '#11161d' : '#f3f1ee',
+    borderRadius: 12,
+  };
 
   const options = {
     chart: {
       type: 'pie',
-      backgroundColor: darkMode ? '#11161D' : '#F3F1EE',
-      borderRadius: '12px',
+      backgroundColor: colors.plotBackgroundColor,
+      borderRadius: colors.borderRadius,
     },
     title: {
       text: 'Paid vs Organic',
-      align: 'center',
       style: {
-        color: darkMode ? '#9FA3A6' : '#000000',
+        color: colors.textColor,
       },
     },
     legend: {
-      layout: 'horizontal',
+      itemStyle: {
+        color: colors.textColor,
+      },
       align: 'center',
       verticalAlign: 'top',
-      y: 20,
-      floating: true,
-      itemStyle: {
-        color: darkMode ? '#9FA3A6' : '#000000',
+      layout: 'horizontal',
+      labelFormatter: function () {
+        return `${this.name}: ${Math.round(this.y)}%`;
       },
     },
     tooltip: {
       pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>',
       style: {
-        color: darkMode ? '#9FA3A6' : '#000000',
-      },
-    },
-    accessibility: {
-      point: {
-        valueSuffix: '%',
+        color: colors.textColor,
       },
     },
     plotOptions: {
       pie: {
+        borderWidth: 0,
         allowPointSelect: true,
         cursor: 'pointer',
+        showInLegend: true,
         dataLabels: {
           enabled: false,
         },
-        showInLegend: true,
-        size: '80%',
       },
     },
     series: [
       {
-        name: 'Share',
+        name: 'Mix',
         colorByPoint: true,
-        data: [
-          {
-            name: 'Paid',
-            y: 81,
-            color: '#D4A15A',
-          },
-          {
-            name: 'Organic',
-            y: 19,
-            color: '#437276',
-          },
-        ],
+        data: pieData,
       },
     ],
   };
 
   return (
-    <div className='rounded-[12px] w-[400px] max-md:w-[240px] max-sm:w-full'>
+    <div
+      className={clsx(
+        'rounded-[12px] w-[400px] max-md:w-[240px] max-sm:w-full',
+        {
+          'opacity-50 grayscale pointer-events-none': isLoading || !data,
+        }
+      )}
+    >
       <HighchartsReact highcharts={Highcharts} options={options} />
-      <div>
-        <div>
-          <h1>Selected Date Range:</h1>
-          <p> Start Date: {startDate}</p>
-          <p>End Date: {endDate}</p>
-        </div>
-        {/* <h1>Selected Company ID: {selectedTableIdentifier}</h1>
-        <h1>BigQuery Data</h1>
-        <h1>User Information</h1>
-        <p>Username: {userInfo.email}</p>
-        <p>Company: {companyInfo.id}</p>
-        <pre>{JSON.stringify(data, null, 2)}</pre> */}
-      </div>
     </div>
   );
 };

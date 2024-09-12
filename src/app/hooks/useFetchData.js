@@ -4,10 +4,11 @@ const fetchBigQueryData = async (
   tableIdentifier,
   queryType,
   startDate,
-  endDate
+  endDate,
+  hdyhau
 ) => {
   const response = await fetch(
-    `/api/bigquerydata?tableIdentifier=${tableIdentifier}&queryType=${queryType}&startDate=${startDate}&endDate=${endDate}`
+    `/api/bigquerydata?tableIdentifier=${tableIdentifier}&queryType=${queryType}&startDate=${startDate}&endDate=${endDate}&hdyhau=${hdyhau}`
   );
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
@@ -15,11 +16,24 @@ const fetchBigQueryData = async (
   return response.json();
 };
 
-const useBigQueryData = (tableIdentifier, queryType, startDate, endDate) => {
+const useBigQueryData = (
+  tableIdentifier,
+  queryType,
+  startDate,
+  endDate,
+  hdyhau
+) => {
   return useQuery({
-    queryKey: ['bigQueryData', tableIdentifier, queryType, startDate, endDate],
+    queryKey: [
+      'bigQueryData',
+      tableIdentifier,
+      queryType,
+      startDate,
+      endDate,
+      hdyhau,
+    ],
     queryFn: () =>
-      fetchBigQueryData(tableIdentifier, queryType, startDate, endDate),
+      fetchBigQueryData(tableIdentifier, queryType, startDate, endDate, hdyhau),
     staleTime: 1000 * 60 * 1, // 1 minute
     cacheTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: true, // Refetch data on window focus

@@ -8,19 +8,43 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 import clsx from 'clsx';
 
-const Topbar = ({ userInfo, companyInfo, portfolioList, tableIdentifier }) => {
+const Topbar = ({
+  userInfo,
+  companyInfo,
+  portfolioList,
+  tableIdentifier,
+  hdyhau,
+}) => {
   const darkMode = useSelector((state) => state.theme.darkMode);
+  const selectedCompany = useSelector(
+    (state) => state.company.selectedCompanyName
+  );
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    // Cache the data
-    queryClient.setQueryData('userData', {
-      userInfo,
-      companyInfo,
-      portfolioList,
-      tableIdentifier,
-    });
-  }, [queryClient, userInfo, companyInfo, portfolioList, tableIdentifier]);
+    // Cache the data with longer cache time and stale time
+    queryClient.setQueryData(
+      'userData',
+      {
+        userInfo,
+        companyInfo,
+        portfolioList,
+        tableIdentifier,
+        hdyhau,
+      },
+      {
+        staleTime: 1000 * 60 * 60, // 1 hour stale time, meaning it wont refetch for another hr
+        cacheTime: 1000 * 60 * 60 * 6, // 6 hour cache time, meaning the data is stored for 6 hours
+      }
+    );
+  }, [
+    queryClient,
+    userInfo,
+    companyInfo,
+    portfolioList,
+    tableIdentifier,
+    hdyhau,
+  ]);
 
   const [showElement, setShowElement] = useState(false);
   const handleClick = () => {
@@ -75,17 +99,14 @@ const Topbar = ({ userInfo, companyInfo, portfolioList, tableIdentifier }) => {
             className='absolute top-3 left-0 right-0 mx-auto'
           />
           <div>
-            <div className='flex items-center cursor-pointer'>
-              <div className='rounded-full w-12 h-12 text-center flex items-center justify-center bg-green-200 text-green-800 font-bold text-lg'>
-                FT
-              </div>
-              <div className='pl-3'>
-                <div className={clsx('font-bold', darkMode && 'text-white')}>
-                  {userInfo?.first_name} {userInfo?.last_name}
-                </div>
-                <div className='font-[400]'>{userInfo?.email}</div>
-              </div>
-            </div>
+            <h1
+              className={clsx(
+                'text-[24px] text-center  font-bold leading-7 absolute right-5 top-5 text-nowrap max-sm:text-[20px]',
+                darkMode && 'text-white'
+              )}
+            >
+              {selectedCompany}
+            </h1>
           </div>
         </div>
       </div>

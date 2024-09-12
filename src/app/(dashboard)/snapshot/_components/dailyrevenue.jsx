@@ -5,6 +5,7 @@ import HighchartsReact from 'highcharts-react-official';
 import useBigQueryData from '../../../hooks/useFetchData';
 import { useSelector } from 'react-redux';
 import patternFill from 'highcharts/modules/pattern-fill';
+import clsx from 'clsx';
 
 patternFill(Highcharts);
 
@@ -22,49 +23,62 @@ const DailyRevenue = () => {
     endDate
   );
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  // if (error || !data) {
+  //   return <div>Error loading data</div>;
+  // }
 
-  if (error || !data) {
-    return <div>Error loading data</div>;
-  }
-
-  const metrics = {
-    date: data.map((item) => item.date.value),
-    actual_spend: data.map((item) => parseFloat(item.actual_spend) || 0),
-    actual_new_revenue: data.map(
-      (item) => parseFloat(item.actual_new_revenue) || 0
-    ),
-    actual_total_revenue: data.map(
-      (item) => parseFloat(item.actual_total_revenue) || 0
-    ),
-    target_spend: data.map((item) => parseFloat(item.target_spend) || 0),
-    target_new_revenue: data.map(
-      (item) => parseFloat(item.target_new_revenue) || 0
-    ),
-    target_total_revenue: data.map(
-      (item) => parseFloat(item.target_total_revenue) || 0
-    ),
-    running_total_actual_spend: data.map(
-      (item) => parseFloat(item.running_total_actual_spend) || 0
-    ),
-    running_total_actual_new_revenue: data.map(
-      (item) => parseFloat(item.running_total_actual_new_revenue) || 0
-    ),
-    running_total_actual_total_revenue: data.map(
-      (item) => parseFloat(item.running_total_actual_total_revenue) || 0
-    ),
-    running_total_target_total_revenue: data.map(
-      (item) => parseFloat(item.running_total_target_total_revenue) || 0
-    ),
-    running_total_target_new_revenue: data.map(
-      (item) => parseFloat(item.running_total_target_new_revenue) || 0
-    ),
-    delta_running_total_revenue_todate: data.map(
-      (item) => parseFloat(item.delta_running_total_revenue_todate) || 0
-    ),
-  };
+  const metrics =
+    isLoading || !data
+      ? {
+          date: [], // No dates
+          actual_spend: [],
+          actual_new_revenue: [],
+          actual_total_revenue: [],
+          target_spend: [],
+          target_new_revenue: [],
+          target_total_revenue: [],
+          running_total_actual_spend: [],
+          running_total_actual_new_revenue: [],
+          running_total_actual_total_revenue: [],
+          running_total_target_total_revenue: [],
+          running_total_target_new_revenue: [],
+          delta_running_total_revenue_todate: [],
+        }
+      : {
+          date: data.map((item) => item.date.value),
+          actual_spend: data.map((item) => parseFloat(item.actual_spend) || 0),
+          actual_new_revenue: data.map(
+            (item) => parseFloat(item.actual_new_revenue) || 0
+          ),
+          actual_total_revenue: data.map(
+            (item) => parseFloat(item.actual_total_revenue) || 0
+          ),
+          target_spend: data.map((item) => parseFloat(item.target_spend) || 0),
+          target_new_revenue: data.map(
+            (item) => parseFloat(item.target_new_revenue) || 0
+          ),
+          target_total_revenue: data.map(
+            (item) => parseFloat(item.target_total_revenue) || 0
+          ),
+          running_total_actual_spend: data.map(
+            (item) => parseFloat(item.running_total_actual_spend) || 0
+          ),
+          running_total_actual_new_revenue: data.map(
+            (item) => parseFloat(item.running_total_actual_new_revenue) || 0
+          ),
+          running_total_actual_total_revenue: data.map(
+            (item) => parseFloat(item.running_total_actual_total_revenue) || 0
+          ),
+          running_total_target_total_revenue: data.map(
+            (item) => parseFloat(item.running_total_target_total_revenue) || 0
+          ),
+          running_total_target_new_revenue: data.map(
+            (item) => parseFloat(item.running_total_target_new_revenue) || 0
+          ),
+          delta_running_total_revenue_todate: data.map(
+            (item) => parseFloat(item.delta_running_total_revenue_todate) || 0
+          ),
+        };
 
   const colors = {
     plotBackgroundColor: darkMode ? '#11161d' : '#f3f1ee',
@@ -433,7 +447,11 @@ const DailyRevenue = () => {
   };
 
   return (
-    <div className='w-full grid justify-items-stretch'>
+    <div
+      className={clsx('w-full grid justify-items-stretch', {
+        'opacity-50 grayscale pointer-events-none': isLoading || !data,
+      })}
+    >
       <HighchartsReact highcharts={Highcharts} options={options} />
     </div>
   );

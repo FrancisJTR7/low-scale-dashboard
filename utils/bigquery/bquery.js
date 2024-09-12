@@ -1,6 +1,12 @@
 const bigquery = require('./client');
 
-async function fetchData(tableIdentifier, queryType, startDate, endDate) {
+async function fetchData(
+  tableIdentifier,
+  queryType,
+  startDate,
+  endDate,
+  hdyhau
+) {
   let query;
 
   switch (queryType) {
@@ -297,7 +303,7 @@ FROM
   WITH base AS (
     SELECT
       FORMAT_DATE('%Y-%m', PARSE_DATE('%m/%d/%Y', t.day)) AS month,
-      PARSE_DATE('%m/%d/%Y', t.day) AS date,
+      DATE_ADD(PARSE_DATE('%m/%d/%Y', t.day), INTERVAL 1 DAY) AS date,
       p.total_spend,
       p.new_orders,
       p.new_revenue,
@@ -587,6 +593,39 @@ FROM
 ORDER BY
   date;
 `;
+      break;
+    case 'paidVsOrganic':
+      query = `select 
+      date
+      , case 
+        when response like '%Facebook%' then 'Facebook or Instagram'
+        when response like '%Instagram%' then 'Facebook or Instagram'
+        when response like '%Google%' then 'Google'
+        when lower(response) like '%youtube%' then 'YouTube'
+        when response like '%Friend%' then 'Word of Mouth'
+        when response like '%Family%' then 'Word of Mouth'
+        when response like '%Word of Mouth%' then 'Word of Mouth'
+        else response 
+      end as response
+      , sum(count) as count 
+      , round(sum(revenue),0) as revenue
+  from \`orcaanalytics.analytics.${hdyhau}_hdyhau__${tableIdentifier}\`
+  group by 1,2
+  order by 1`;
+      break;
+    case 'sessionsVsCvr':
+      query = `select
+  *
+  , case 
+      when sessions = 0 then 0
+      when sessions is null then 0
+      else new_orders / sessions 
+    end as new_cvr
+from
+  
+where
+  -- DATE between now() - interval '15 day' and now() - interval '1 day'
+  date >= '${startDate}' and date <= '${endate}'`;
       break;
     default:
       throw new Error(`Unknown query type: ${queryType}`);

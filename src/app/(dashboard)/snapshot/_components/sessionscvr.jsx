@@ -5,9 +5,24 @@ import Highcharts from 'highcharts';
 import HighchartsExporting from 'highcharts/modules/exporting';
 import HighchartsReact from 'highcharts-react-official';
 import { useSelector } from 'react-redux';
+import useBigQueryData from '../../../hooks/useFetchData';
+import patternFill from 'highcharts/modules/pattern-fill';
+import clsx from 'clsx';
+
+patternFill(Highcharts);
 
 const SessionsVsCVRChart = () => {
   const darkMode = useSelector((state) => state.theme.darkMode);
+  const selectedTableIdentifier = useSelector(
+    (state) => state.company.selectedTableIdentifier
+  );
+  const { startDate, endDate } = useSelector((state) => state.selectedDates);
+  const { data, isLoading } = useBigQueryData(
+    selectedTableIdentifier,
+    'sessionsVsCvr',
+    startDate,
+    endDate
+  );
 
   useEffect(() => {
     if (typeof Highcharts === 'object') {
@@ -15,50 +30,58 @@ const SessionsVsCVRChart = () => {
     }
   }, []);
 
+  const colors = {
+    sessions0: darkMode ? '#196E64' : '#B1E4E3',
+    sessions1: darkMode ? '#196E64' : '#B1E4E3',
+    cvr0: darkMode ? '#FA8CC8' : '#892951',
+    cvr1: darkMode ? '#FA8CC8' : '#892951',
+    textColor: darkMode ? '#9FA3A6' : '#000000',
+    plotBackgroundColor: darkMode ? '#11161d' : '#f3f1ee',
+    tickLineColor: darkMode ? '#24282c' : '#cec8bb',
+    sessionsOpacity: darkMode ? 0.8 : 1.0,
+    cvrOpacity: darkMode ? 0.7 : 0.7,
+    borderRadius: 12,
+  };
+
+  const dates = isLoading || !data ? [] : data.map((item) => item.date);
+  const sessions =
+    isLoading || !data
+      ? []
+      : data.map((item) => parseFloat(item.sessions) || 0);
+  const cvr =
+    isLoading || !data ? [] : data.map((item) => parseFloat(item.cvr) || 0);
+
   const options = {
     chart: {
       type: 'line',
-      backgroundColor: darkMode ? '#11161D' : '#F3F1EE',
-      borderRadius: '12px',
+      backgroundColor: colors.plotBackgroundColor,
+      borderRadius: colors.borderRadius,
     },
     title: {
       text: 'Sessions vs CVR',
-      align: 'center',
       style: {
-        color: darkMode ? '#9FA3A6' : '#000000', // Title text color
+        color: colors.textColor,
+        fontFamily: 'PP Object Sans, sans-serif',
       },
     },
     legend: {
       layout: 'horizontal',
       align: 'center',
       verticalAlign: 'top',
-      y: 20,
-      floating: true,
       itemStyle: {
-        color: darkMode ? '#9FA3A6' : '#000000', // Legend text color
+        color: colors.textColor,
+        fontWeight: 'bold',
       },
     },
     xAxis: {
-      categories: [
-        '5/22',
-        '5/23',
-        '5/24',
-        '5/25',
-        '5/26',
-        '5/27',
-        '5/28',
-        '5/29',
-        '5/30',
-        '5/31',
-        '6/1',
-        '6/2',
-        '6/3',
-        '6/4',
-        '6/5',
-      ],
+      categories: dates.map((dateStr) => {
+        const dateObj = new Date(`${dateStr}T00:00:00`);
+        return `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
+      }),
       labels: {
         style: {
-          color: darkMode ? '#9FA3A6' : '#000000', // X-axis labels color
+          color: colors.textColor,
+          fontFamily: 'PP Object Sans, sans-serif',
         },
       },
     },
@@ -67,69 +90,102 @@ const SessionsVsCVRChart = () => {
         title: {
           text: 'Sessions',
           style: {
-            color: darkMode ? '#9FA3A6' : '#000000', // Y-axis title color
+            color: colors.textColor,
+            fontFamily: 'PP Object Sans, sans-serif',
           },
         },
         labels: {
-          format: '{value}k',
           style: {
-            color: darkMode ? '#9FA3A6' : '#000000', // Y-axis labels color
+            color: colors.textColor,
+            fontFamily: 'PP Object Sans, sans-serif',
           },
         },
+        min: 0,
+        gridLineColor: colors.tickLineColor,
+        tickColor: colors.tickLineColor,
       },
       {
         title: {
           text: 'CVR',
           style: {
-            color: darkMode ? '#9FA3A6' : '#000000', // Opposite Y-axis title color
+            color: colors.textColor,
+            fontFamily: 'PP Object Sans, sans-serif',
           },
         },
         labels: {
-          format: '{value}%',
           style: {
-            color: darkMode ? '#9FA3A6' : '#000000', // Opposite Y-axis labels color
+            color: colors.textColor,
+            fontFamily: 'PP Object Sans, sans-serif',
+          },
+          formatter: function () {
+            return `${(this.value * 100).toFixed(2)}%`;
           },
         },
+        min: 0,
+        gridLineColor: colors.tickLineColor,
+        tickColor: colors.tickLineColor,
         opposite: true,
       },
     ],
     tooltip: {
       shared: true,
       formatter: function () {
-        let tooltip = `<strong style="color: ${
-          darkMode ? '#9FA3A6' : '#000000'
-        }">${this.x}</strong><br>`;
+        let tooltip = `<strong style="color: ${colors.textColor}">${this.x}</strong><br>`;
         this.points.forEach((point) => {
           tooltip += `<span style="color: ${point.color}">${
             point.series.name
-          }:</span> ${point.y}${point.series.name === 'CVR' ? '%' : 'k'}<br>`;
+          }:</span> ${
+            point.series.name === 'CVR'
+              ? (point.y * 100).toFixed(2) + '%'
+              : Highcharts.numberFormat(point.y, 0, '.', ',')
+          }<br>`;
         });
         return tooltip;
       },
       style: {
-        color: darkMode ? '#9FA3A6' : '#000000', // Tooltip text color
+        color: colors.textColor,
+        fontFamily: 'PP Object Sans, sans-serif',
       },
     },
     series: [
       {
         name: 'Sessions',
-        data: [12, 13, 11, 14, 16, 12, 13, 14, 13, 12, 12, 15, 16, 14, 13],
-        color: '#5DADE2',
+        type: 'spline',
+        data: sessions,
+        lineWidth: 2.5,
+        opacity: colors.sessionsOpacity,
+        color: {
+          linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+          stops: [
+            [0, colors.sessions0],
+            [1, colors.sessions1],
+          ],
+        },
       },
       {
         name: 'CVR',
-        data: [
-          2.1, 2.3, 2.2, 2.4, 2.5, 2.3, 2.1, 2.4, 2.2, 2.1, 2.3, 2.4, 2.5, 2.2,
-          2.3,
-        ],
-        color: '#AF7AC5',
+        type: 'spline',
+        data: cvr,
         yAxis: 1,
+        lineWidth: 2.5,
+        opacity: colors.cvrOpacity,
+        color: {
+          linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+          stops: [
+            [0, colors.cvr0],
+            [1, colors.cvr1],
+          ],
+        },
       },
     ],
   };
 
   return (
-    <div className='w-full grid justify-items-stretch'>
+    <div
+      className={clsx('w-full grid justify-items-stretch', {
+        'opacity-50 grayscale pointer-events-none': isLoading || !data,
+      })}
+    >
       <HighchartsReact highcharts={Highcharts} options={options} />
     </div>
   );

@@ -3,7 +3,6 @@ import { createClient } from '@/utils/supabase/server';
 import Sidebar from './_navbars/sidebar/sidebar';
 import Topbar from './_navbars/topbar/topbar';
 import { redirect } from 'next/navigation';
-import { CSPostHogProvider } from '../providers';
 
 const fetchUserData = async () => {
   const supabase = createClient();
@@ -38,6 +37,9 @@ const fetchUserData = async () => {
   // Variable to store user's table identifier
   const tableIdentifier = companyInfo[0]?.table_identifier;
 
+  //Variable to store the hdyhau (how did you hear about us) variable
+  const hdyhau = companyInfo[0]?.hdyhau.toLowerCase();
+
   // Variable to store the authenticated user's portfolio id
   const userPortfolioId = userInfo[0]?.portfolio_id;
 
@@ -52,6 +54,7 @@ const fetchUserData = async () => {
     companyInfo: companyInfo[0] || {},
     portfolioList: portfolioList || [],
     tableIdentifier: tableIdentifier || '',
+    hdyhau: hdyhau || '',
   };
 };
 
