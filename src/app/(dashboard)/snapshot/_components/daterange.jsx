@@ -13,10 +13,48 @@ export function DatePickerWithRange({ className }) {
   const dispatch = useDispatch();
   const { startDate, endDate } = useSelector((state) => state.selectedDates);
 
+  // Get today's date (stable reference)
+  const todayRef = React.useRef(new Date());
+  const today = todayRef.current;
+
+  // Compute the adjusted start date
+  const adjustedStartDate = React.useMemo(() => {
+    if (today.getDate() === 1) {
+      return new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    } else {
+      return new Date(startDate); // Use Redux startDate
+    }
+  }, [today, startDate]);
+
+  // Compute the adjusted end date
+  const adjustedEndDate = React.useMemo(() => {
+    if (today.getDate() === 1) {
+      // Last day of the previous month
+      return new Date(today.getFullYear(), today.getMonth(), 0);
+    } else {
+      // Yesterday
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+      return yesterday;
+    }
+  }, [today]);
+
+  // Initialize component's local state with the adjusted dates
   const [date, setDate] = React.useState({
-    from: addDays(new Date(startDate), 1),
-    to: addDays(new Date(endDate), 1),
+    from: adjustedStartDate,
+    to: adjustedEndDate,
   });
+
+  // Dispatch the adjusted dates into Redux only once on mount
+  React.useEffect(() => {
+    dispatch(
+      setSelectedDates({
+        startDate: adjustedStartDate,
+        endDate: adjustedEndDate,
+      })
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   const handleSelect = (range) => {
     if (range?.from && range?.to) {

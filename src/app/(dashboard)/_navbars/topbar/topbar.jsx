@@ -91,8 +91,7 @@ const Topbar = ({
             </div>
           )}
           <Image
-            src='/orcaLogo.png'
-            W
+            src={darkMode ? '/orcaLogoGreen.png' : '/orcaLogo.png'}
             alt='orca'
             width='140'
             height='60'
@@ -101,7 +100,7 @@ const Topbar = ({
           <div>
             <h1
               className={clsx(
-                'text-[24px] text-center  font-bold leading-7 absolute right-5 top-5 text-nowrap max-sm:text-[20px]',
+                'text-[24px] text-center  font-bold leading-7 absolute right-5 top-5 text-nowrap max-sm:hidden',
                 darkMode && 'text-white'
               )}
             >

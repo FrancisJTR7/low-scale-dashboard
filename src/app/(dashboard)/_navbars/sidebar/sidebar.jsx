@@ -28,7 +28,7 @@ const Sidebar = () => {
       <div>
         <div className='flex flex-col items-center mb-[20px]'>
           <Image
-            src='/orcaLogo.png'
+            src={darkMode ? '/orcaLogoGreen.png' : '/orcaLogo.png'}
             alt='profile'
             width='80'
             height='23'
@@ -48,7 +48,6 @@ const Sidebar = () => {
           item={{
             title: 'Snapshot',
             path: '/snapshot',
-            icon: <MdDashboard />,
           }}
         />
         <MenuToggle />

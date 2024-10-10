@@ -416,7 +416,7 @@ FROM
     FROM
       dailypacing
     WHERE
-      date >= DATE_TRUNC(CURRENT_DATE(), MONTH) AND date < CURRENT_DATE()
+      date >= ('${startDate}') AND date < ('${endDate}')
     GROUP BY
       month, date, actual_spend, actual_new_orders, actual_new_revenue, actual_return_orders, actual_return_revenue, actual_total_orders, actual_total_revenue, target_spend, target_new_orders, target_new_revenue, target_return_orders, target_return_revenue, target_total_orders, target_total_revenue
   )
@@ -613,22 +613,8 @@ ORDER BY
   group by 1,2
   order by 1`;
       break;
-    case 'sessionsVsCvr':
-      query = `select
-        *
-        , case 
-            when sessions = 0 then 0
-            when sessions is null then 0
-            else new_orders / sessions 
-          end as new_cvr
-      from
-        
-      where
-        -- DATE between now() - interval '15 day' and now() - interval '1 day'
-        date >= '${startDate}' and date <= '${endDate}'`;
-            break;
-      case 'dailyBiz':
-        query = `
+    case 'dailyBiz':
+      query = `
         with base as (
           select
             date

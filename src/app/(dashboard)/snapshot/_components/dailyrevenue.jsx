@@ -20,7 +20,11 @@ const DailyRevenue = () => {
     selectedTableIdentifier,
     'dailyRevenue',
     startDate,
-    endDate
+    endDate,
+    {
+      staleTime: 1000 * 60 * 60, // 1 hour stale time, meaning it wont refetch for another hr
+      cacheTime: 1000 * 60 * 60 * 6, // 6 hour cache time, meaning the data is stored for 6 hours
+    }
   );
 
   // if (error || !data) {
@@ -28,7 +32,7 @@ const DailyRevenue = () => {
   // }
 
   const metrics =
-    isLoading || !data
+    isLoading || !data || data.length === 0
       ? {
           date: [], // No dates
           actual_spend: [],
@@ -444,12 +448,24 @@ const DailyRevenue = () => {
         },
       },
     ],
+    exporting: {
+      buttons: {
+        contextButton: {
+          theme: {
+            style: {
+              opacity: 0.2, // hamburger icon opacity
+            },
+          },
+        },
+      },
+    },
   };
 
   return (
     <div
       className={clsx('w-full grid justify-items-stretch', {
-        'opacity-50 grayscale pointer-events-none': isLoading || !data,
+        'opacity-50 grayscale pointer-events-none':
+          isLoading || !data || data.length === 0,
       })}
     >
       <HighchartsReact highcharts={Highcharts} options={options} />

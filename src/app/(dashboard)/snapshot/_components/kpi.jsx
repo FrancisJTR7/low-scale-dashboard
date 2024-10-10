@@ -7,15 +7,41 @@ import { useQueryClient } from '@tanstack/react-query';
 import useBigQueryData from '../../../hooks/useFetchData';
 import { useSelector } from 'react-redux';
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' ? window.innerWidth < 640 : false
+  );
+
+  useEffect(() => {
+    function handleResize() {
+      setIsMobile(window.innerWidth < 640);
+    }
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return isMobile;
+}
+
 const formatChange = (change) => {
   return `${(Math.abs(change) * 100).toFixed(0)}%`;
 };
 
-const formatNumber = (number) => {
+const formatNumber = (number, isMobile) => {
   return `$${new Intl.NumberFormat('en-US', {
+    notation: isMobile ? 'compact' : 'standard',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    maximumFractionDigits: isMobile ? 2 : 0,
   }).format(number)}`;
+};
+
+const formatValue = (item, isMobile) => {
+  if (item.title === 'bROAS') {
+    // Assuming bROAS is a decimal like 0.35 for 35%
+    return `${(item.value * 100).toFixed(isMobile ? 2 : 0)}%`;
+  } else {
+    return formatNumber(item.value, isMobile);
+  }
 };
 
 const Kpi = () => {
@@ -30,17 +56,30 @@ const Kpi = () => {
   //   }
   // }, [queryClient]);
 
+  const isMobile = useIsMobile();
+
   const selectedTableIdentifier = useSelector(
     (state) => state.company.selectedTableIdentifier
   );
 
   const darkMode = useSelector((state) => state.theme.darkMode);
 
-  const { data, isLoading } = useBigQueryData(selectedTableIdentifier, 'kpi');
+  const { startDate, endDate } = useSelector((state) => state.selectedDates);
+
+  const { data, isLoading } = useBigQueryData(
+    selectedTableIdentifier,
+    'kpi',
+    startDate,
+    endDate,
+    {
+      staleTime: 1000 * 60 * 60, // 1 hour stale time, meaning it wont refetch for another hr
+      cacheTime: 1000 * 60 * 60 * 6, // 6 hour cache time, meaning the data is stored for 6 hours
+    }
+  );
 
   // Handle loading state by returning a placeholder or empty data
   const kpiItems =
-    isLoading || !data
+    isLoading || !data || data.length === 0
       ? [
           { title: 'Spend', value: null, change: null, positive: true },
           { title: 'New Revenue', value: null, change: null, positive: true },
@@ -120,7 +159,8 @@ const Kpi = () => {
       className={clsx(
         'space-y-2.5 w-[15rem] max-md:w-full flex flex-wrap items-center justify-between max-md:space-y-0 max-md:gap-y-4',
         {
-          'opacity-50 grayscale pointer-events-none': isLoading || !data,
+          'opacity-50 grayscale pointer-events-none':
+            isLoading || !data || data.length === 0,
         }
       )}
     >
@@ -134,8 +174,8 @@ const Kpi = () => {
         >
           <div className='text-[.8rem] font-bold '>{item.title}</div>
           <div className='flex justify-center items-center gap-2'>
-            <div className='text-2xl font-extrabold '>
-              {item.value !== null ? formatNumber(item.value) : '...'}
+            <div className='text-2xl font-extrabold max-sm:text-xl '>
+              {item.value !== null ? formatValue(item, isMobile) : '...'}
             </div>
             <div
               className={clsx(

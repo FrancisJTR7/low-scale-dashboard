@@ -14,7 +14,7 @@ const Paidvsorganic = () => {
     (state) => state.company.selectedTableIdentifier
   );
 
-  const hdyhau = useSelector((state) => state.company.hdyhau?.toLowerCase());
+  let hdyhau = useSelector((state) => state.company.hdyhau?.toLowerCase());
 
   const { startDate, endDate } = useSelector((state) => state.selectedDates);
 
@@ -24,8 +24,16 @@ const Paidvsorganic = () => {
     'paidVsOrganic',
     startDate,
     endDate,
-    hdyhau
+    hdyhau,
+    {
+      staleTime: 1000 * 60 * 60, // 1 hour stale time, meaning it wont refetch for another hr
+      cacheTime: 1000 * 60 * 60 * 6, // 6 hour cache time, meaning the data is stored for 6 hours
+    }
   );
+
+  if (hdyhau === 'knocommerce') {
+    hdyhau = 'none';
+  }
 
   // Categorize the responses as "Paid" or "Organic"-
   const categorizeResponse = (response) => {
@@ -81,6 +89,9 @@ const Paidvsorganic = () => {
       type: 'pie',
       backgroundColor: colors.plotBackgroundColor,
       borderRadius: colors.borderRadius,
+      style: {
+        fontFamily: 'PP Object Sans, sans-serif', // Apply fontFamily globally
+      },
     },
     title: {
       text: 'Paid vs Organic',
@@ -123,6 +134,17 @@ const Paidvsorganic = () => {
         data: pieData,
       },
     ],
+    exporting: {
+      buttons: {
+        contextButton: {
+          theme: {
+            style: {
+              opacity: 0.2, // hamburger icon opacity
+            },
+          },
+        },
+      },
+    },
   };
 
   return (

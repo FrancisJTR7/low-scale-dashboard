@@ -17,11 +17,14 @@ const SessionsVsCVRChart = () => {
     (state) => state.company.selectedTableIdentifier
   );
   const { startDate, endDate } = useSelector((state) => state.selectedDates);
-  const { data, isLoading } = useBigQueryData(
+
+  const { data, isLoading, error } = useBigQueryData(
     selectedTableIdentifier,
-    'sessionsVsCvr',
-    startDate,
-    endDate
+    'dailyBiz',
+    {
+      staleTime: 1000 * 60 * 60, // 1 hour stale time, meaning it wont refetch for another hr
+      cacheTime: 1000 * 60 * 60 * 6, // 6 hour cache time, meaning the data is stored for 6 hours
+    }
   );
 
   useEffect(() => {
@@ -30,11 +33,58 @@ const SessionsVsCVRChart = () => {
     }
   }, []);
 
+  const formatNumber = (value) => {
+    const num = parseFloat(value);
+    return isNaN(num) ? 0 : num;
+  };
+
+  // Calculate the difference between the start and end dates
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const dateDiff = (end - start) / (1000 * 60 * 60 * 24); // Difference in days
+
+  // If the range is less than 15 days, adjust the start date to 14 days before the end date
+  const adjustedStartDate =
+    dateDiff < 15 ? new Date(end.getTime() - 14 * 24 * 60 * 60 * 1000) : start;
+
+  // Adjusted Data Handling
+  const filteredData =
+    isLoading || error || !data || data.length === 0
+      ? {
+          date: [],
+          sessions: [],
+          cvr: [],
+          cac: [],
+        }
+      : data.reduce(
+          (acc, item) => {
+            const currentDate = new Date(item.date.value);
+            if (currentDate >= adjustedStartDate && currentDate <= end) {
+              acc.date.push(currentDate.toISOString().split('T')[0]);
+              acc.sessions.push(formatNumber(item.sessions));
+              acc.cvr.push(formatNumber(item.cvr || item.new_orders || 0));
+              acc.cac.push(formatNumber(item.cac));
+            }
+            return acc;
+          },
+          { date: [], sessions: [], cvr: [], cac: [] }
+        );
+
+  // Sort the data by date
+  const sortedIndices = filteredData.date
+    .map((date, index) => ({ date, index }))
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .map((item) => item.index);
+
+  for (const key in filteredData) {
+    filteredData[key] = sortedIndices.map((i) => filteredData[key][i]);
+  }
+
   const colors = {
     sessions0: darkMode ? '#196E64' : '#B1E4E3',
     sessions1: darkMode ? '#196E64' : '#B1E4E3',
-    cvr0: darkMode ? '#FA8CC8' : '#892951',
-    cvr1: darkMode ? '#FA8CC8' : '#892951',
+    cvr0: darkMode ? '#f7efd6' : '#892951',
+    cvr1: darkMode ? '#f7efd6' : '#892951',
     textColor: darkMode ? '#9FA3A6' : '#000000',
     plotBackgroundColor: darkMode ? '#11161d' : '#f3f1ee',
     tickLineColor: darkMode ? '#24282c' : '#cec8bb',
@@ -43,19 +93,15 @@ const SessionsVsCVRChart = () => {
     borderRadius: 12,
   };
 
-  const dates = isLoading || !data ? [] : data.map((item) => item.date);
-  const sessions =
-    isLoading || !data
-      ? []
-      : data.map((item) => parseFloat(item.sessions) || 0);
-  const cvr =
-    isLoading || !data ? [] : data.map((item) => parseFloat(item.cvr) || 0);
-
   const options = {
     chart: {
       type: 'line',
       backgroundColor: colors.plotBackgroundColor,
       borderRadius: colors.borderRadius,
+      style: {
+        color: darkMode ? '#98A4AE' : '#11161d',
+        fontFamily: 'PP Object Sans, sans-serif', // Apply fontFamily globally
+      },
     },
     title: {
       text: 'Sessions vs CVR',
@@ -74,9 +120,9 @@ const SessionsVsCVRChart = () => {
       },
     },
     xAxis: {
-      categories: dates.map((dateStr) => {
-        const dateObj = new Date(`${dateStr}T00:00:00`);
-        return `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
+      categories: filteredData.date.map((dateStr) => {
+        const dateObj = new Date(`${dateStr}T00:00:00`); // Add time to prevent timezone issues
+        return `${dateObj.getMonth() + 1}/${dateObj.getDate()}`; // Format as 'M/D'
       }),
       labels: {
         style: {
@@ -151,7 +197,7 @@ const SessionsVsCVRChart = () => {
       {
         name: 'Sessions',
         type: 'spline',
-        data: sessions,
+        data: filteredData.sessions,
         lineWidth: 2.5,
         opacity: colors.sessionsOpacity,
         color: {
@@ -165,7 +211,7 @@ const SessionsVsCVRChart = () => {
       {
         name: 'CVR',
         type: 'spline',
-        data: cvr,
+        data: filteredData.cvr,
         yAxis: 1,
         lineWidth: 2.5,
         opacity: colors.cvrOpacity,
@@ -178,12 +224,24 @@ const SessionsVsCVRChart = () => {
         },
       },
     ],
+    exporting: {
+      buttons: {
+        contextButton: {
+          theme: {
+            style: {
+              opacity: 0.2, // hamburger icon opacity
+            },
+          },
+        },
+      },
+    },
   };
 
   return (
     <div
       className={clsx('w-full grid justify-items-stretch', {
-        'opacity-50 grayscale pointer-events-none': isLoading || !data,
+        'opacity-50 grayscale pointer-events-none':
+          isLoading || error || !data || data.length === 0,
       })}
     >
       <HighchartsReact highcharts={Highcharts} options={options} />

@@ -95,8 +95,8 @@ const MenuToggle = () => {
           {cat.title && (
             <div
               className={clsx(
-                'flex justify-between items-center p-[10px] my-[5px] italic cursor-pointer hover:bg-[#BAB5A9] rounded-[5px]  text-[14px]',
-                DarkMode && 'hover:bg-bluestone'
+                'flex justify-between items-center p-[10px] my-[5px] italic cursor-pointer hover:bg-[#AFB6C8] rounded-[5px]  text-[15px]',
+                DarkMode && 'hover:bg-[#BAB5A9]'
               )}
               onClick={() => toggleMenu(cat.title)}
             >

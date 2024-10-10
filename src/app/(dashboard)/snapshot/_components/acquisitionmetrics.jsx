@@ -1,9 +1,10 @@
 'use client';
 
-import Highcharts from 'highcharts';
-import HighchartsReact from 'highcharts-react-official';
 import { useSelector } from 'react-redux';
+import Highcharts, { color } from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
 import useBigQueryData from '../../../hooks/useFetchData';
+import clsx from 'clsx';
 
 const AcquisitionMetricsChart = () => {
   const darkMode = useSelector((state) => state.theme.darkMode);
@@ -14,99 +15,88 @@ const AcquisitionMetricsChart = () => {
 
   const { data, isLoading, error } = useBigQueryData(
     selectedTableIdentifier,
-    'dailyBiz'
+    'dailyBiz',
+    {
+      staleTime: 1000 * 60 * 60, // 1 hour stale time, meaning it wont refetch for another hr
+      cacheTime: 1000 * 60 * 60 * 6, // 6 hour cache time, meaning the data is stored for 6 hours
+    }
   );
 
-// Helper function to safely format numbers with specified decimal places
-const formatNumber = (value, decimalPlaces) => {
-  const num = parseFloat(value);
-  return isNaN(num) ? value : num.toFixed(decimalPlaces);
-};
+  const formatNumber = (value) => {
+    const num = parseFloat(value);
+    return isNaN(num) ? 0 : num;
+  };
 
-// Ensure data and data.date exist before processing
-if (data && data.date) {
-  // Filter and transform data
-  const filteredData = data.date.value.reduce((acc, date, index) => {
-    const currentDate = new Date(date);
-    if (currentDate >= startDate && currentDate <= endDate) {
-      acc.date.push(date);
-      acc.cpo.push(formatNumber(data.cpo[index], 2));
-      acc.cac.push(formatNumber(data.cac[index], 2));
-      acc.roas.push(formatNumber(data.roas[index], 2));
-      acc.new_orders.push(data.new_orders[index].toString());
-      acc.total_spend.push(formatNumber(data.total_spend[index], 2));
-      acc.broas.push(formatNumber(data.broas[index], 2));
-      acc.sessions.push(formatNumber(data.sessions[index], 0));
-      acc.cvr.push(formatNumber(data.cvr[index], 4));
-      acc.newcvr.push(formatNumber(data.newcvr[index], 4));
-    }
-    return acc;
-  }, {
-    date: [],
-    cpo: [],
-    cac: [],
-    roas: [],
-    new_orders: [],
-    total_spend: [],
-    broas: [],
-    sessions: [],
-    cvr: [],
-    newcvr: []
-  });
-  // Sort the data in descending order by date
+  // Calculate the difference between the start and end dates
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const dateDiff = (end - start) / (1000 * 60 * 60 * 24); // Difference in days
+
+  // If the range is less than 15 days, adjust the start date to 14 days before the end date
+  const adjustedStartDate =
+    dateDiff < 15 ? new Date(end.getTime() - 14 * 24 * 60 * 60 * 1000) : start;
+
+  // Define the data for the chart
+  const filteredData =
+    isLoading || error || !data || data.length === 0
+      ? {
+          date: [],
+          total_spend: [],
+          new_customers: [],
+          cac: [],
+        }
+      : data.reduce(
+          (acc, item) => {
+            const currentDate = new Date(item.date.value);
+            if (currentDate >= adjustedStartDate && currentDate <= end) {
+              acc.date.push(currentDate.toISOString().split('T')[0]);
+
+              acc.total_spend.push(formatNumber(item.total_spend));
+              acc.new_customers.push(
+                formatNumber(item.new_customers || item.new_orders || 0)
+              );
+              acc.cac.push(formatNumber(item.cac));
+            }
+            return acc;
+          },
+          { date: [], total_spend: [], new_customers: [], cac: [] }
+        );
+
+  // Sort the data by date
   const sortedIndices = filteredData.date
     .map((date, index) => ({ date, index }))
     .sort((a, b) => new Date(a.date) - new Date(b.date))
-    .map(item => item.index);
-  // Apply sorting to all arrays
-  for (const key in filteredData) {
-    filteredData[key] = sortedIndices.map(i => filteredData[key][i]);
-  }
-  return filteredData;
-} else {
-  console.error("Data or data.date is undefined.");
-  return {
-    date: [],
-    cpo: [],
-    cac: [],
-    roas: [],
-    new_orders: [],
-    total_spend: [],
-    broas: [],
-    sessions: [],
-    cvr: [],
-    newcvr: []
-  };
-}
+    .map((item) => item.index);
 
+  for (const key in filteredData) {
+    filteredData[key] = sortedIndices.map((i) => filteredData[key][i]);
+  }
+
+  // Highcharts configuration
   const options = {
     chart: {
       backgroundColor: darkMode ? '#11161D' : '#F3F1EE',
       borderRadius: '12px',
       height: 450,
+      style: {
+        fontFamily: 'PP Object Sans, sans-serif', // Apply fontFamily globally
+      },
     },
     title: {
       text: 'Acquisition Metrics',
       align: 'center',
       style: {
-        color: darkMode ? '#9FA3A6' : '#000000', // Title text color
-      },
-    },
-    legend: {
-      layout: 'horizontal',
-      align: 'center',
-      verticalAlign: 'top',
-      y: 20,
-      floating: true,
-      itemStyle: {
-        color: darkMode ? '#9FA3A6' : '#000000', // Legend text color
+        color: darkMode ? '#9FA3A6' : '#000000',
       },
     },
     xAxis: {
-      categories: ['1/1'], //filteredData.Date,
+      categories: filteredData.date.map((dateStr) => {
+        const dateObj = new Date(`${dateStr}T00:00:00`); // Add time to prevent timezone issues
+        return `${dateObj.getMonth() + 1}/${dateObj.getDate()}`; // Format as 'M/D'
+      }),
       labels: {
         style: {
-          color: darkMode ? '#9FA3A6' : '#000000', // X-axis labels color
+          color: darkMode ? '#9FA3A6' : '#000000',
         },
       },
     },
@@ -115,13 +105,15 @@ if (data && data.date) {
         title: {
           text: 'Spend',
           style: {
-            color: darkMode ? '#9FA3A6' : '#000000', // Y-axis title color
+            color: darkMode ? '#9FA3A6' : '#000000',
           },
         },
         labels: {
-          format: '${value}k',
+          formatter: function () {
+            return '$' + Highcharts.numberFormat(this.value / 1000, 0) + 'k';
+          },
           style: {
-            color: darkMode ? '#9FA3A6' : '#000000', // Y-axis labels color
+            color: darkMode ? '#9FA3A6' : '#000000',
           },
         },
       },
@@ -129,13 +121,13 @@ if (data && data.date) {
         title: {
           text: 'New Customers',
           style: {
-            color: darkMode ? '#9FA3A6' : '#000000', // Opposite Y-axis title color
+            color: darkMode ? '#9FA3A6' : '#000000',
           },
         },
         labels: {
           format: '{value}',
           style: {
-            color: darkMode ? '#9FA3A6' : '#000000', // Opposite Y-axis labels color
+            color: darkMode ? '#9FA3A6' : '#000000',
           },
         },
         opposite: true,
@@ -144,13 +136,13 @@ if (data && data.date) {
         title: {
           text: 'CAC',
           style: {
-            color: darkMode ? '#9FA3A6' : '#000000', // Second Opposite Y-axis title color
+            color: darkMode ? '#9FA3A6' : '#000000',
           },
         },
         labels: {
           format: '${value}',
           style: {
-            color: darkMode ? '#9FA3A6' : '#000000', // Second Opposite Y-axis labels color
+            color: darkMode ? '#9FA3A6' : '#000000',
           },
         },
         opposite: true,
@@ -163,49 +155,67 @@ if (data && data.date) {
           darkMode ? '#9FA3A6' : '#000000'
         }">${this.x}</strong><br>`;
         this.points.forEach((point) => {
-          tooltip += `<span style="color: ${point.color}">${
-            point.series.name
-          }:</span> ${point.y}${
-            point.series.name === 'CAC'
-              ? '$'
-              : point.series.name === 'Spend'
-              ? 'k'
-              : ''
-          }<br>`;
+          let value = point.y;
+          if (point.series.name === 'Spend') {
+            value = '$' + Highcharts.numberFormat(value, 2) + 'k';
+          } else if (point.series.name === 'CAC') {
+            value = '$' + Highcharts.numberFormat(value, 2);
+          }
+          tooltip += `<span style="color: ${point.color}">${point.series.name}:</span> ${value}<br>`;
         });
         return tooltip;
       },
       style: {
-        color: darkMode ? '#9FA3A6' : '#000000', // Tooltip text color
+        color: darkMode ? '#9FA3A6' : '#000000',
+      },
+    },
+    legend: {
+      itemStyle: {
+        color: darkMode ? '#98A4AE' : '#11161d', // Set legend text color
       },
     },
     series: [
       {
         name: 'Spend',
         type: 'column',
-        data: [20], //filteredData.total_spend,
+        data: filteredData.total_spend,
         color: '#D4A15A',
-        yAxis: 0,
       },
       {
         name: 'New Customers',
-        type: 'line',
-        data: [10], //filteredData.new_orders,
+        type: 'spline',
+        data: filteredData.new_customers,
         color: '#AF7AC5',
         yAxis: 1,
       },
       {
         name: 'CAC',
-        type: 'line',
-        data: [15], //filteredData.cac,
+        type: 'spline',
+        data: filteredData.cac,
         color: '#E74C3C',
         yAxis: 2,
       },
     ],
+    exporting: {
+      buttons: {
+        contextButton: {
+          theme: {
+            style: {
+              opacity: 0.2, // hamburger icon opacity
+            },
+          },
+        },
+      },
+    },
   };
 
   return (
-    <div className='h-min w-full pb-4'>
+    <div
+      className={clsx('h-min w-full pb-4', {
+        'opacity-50 grayscale pointer-events-none':
+          isLoading || error || !data || data.length === 0,
+      })}
+    >
       <HighchartsReact highcharts={Highcharts} options={options} />
     </div>
   );

@@ -1,12 +1,14 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useDispatch } from 'react-redux';
-import { selectCompany } from '../../../../../state/companySlice'; // Update the path as needed
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCompany } from '../../../../../state/companySlice';
+import clsx from 'clsx';
 
 const Dropdown = () => {
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
+  const DarkMode = useSelector((state) => state.theme.darkMode);
 
   const [cachedData, setCachedData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -101,15 +103,21 @@ const Dropdown = () => {
         selectCompany({
           tableIdentifier: selectedTableIdentifier,
           companyName: selectedCompany.company_name,
-          hdyhau: selectedCompany.hdyhau, // Add hdyhau here
+          hdyhau: selectedCompany.hdyhau,
         })
       );
     }
   };
 
   return (
-    <div className='text-black mt-4'>
-      <select className='w-[16.5rem]' onChange={handleCompanyChange}>
+    <div className='text-black mt-4 text-[15px]  '>
+      <select
+        className={clsx(
+          'w-[16.5rem] rounded-md bg-stone p-2',
+          DarkMode && 'bg-[#283454] text-white'
+        )}
+        onChange={handleCompanyChange}
+      >
         {companies.map((company) => (
           <option key={company.id} value={company.table_identifier}>
             {company.company_name}

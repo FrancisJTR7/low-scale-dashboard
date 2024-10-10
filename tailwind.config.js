@@ -76,7 +76,7 @@ module.exports = {
         tyrian: '#371020',
         crimson: '#821E1E',
         gold: '#835D32',
-        pine: '#196E64',
+        pine: '#49c5b1',
         berry: '#892951',
         sunset: '#FF5C39',
         tan: '#C9A961',
